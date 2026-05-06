@@ -503,111 +503,113 @@ export default function Planner() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {curatedPlaces.map((place, index) => (
+                <div                  {curatedPlaces.map((place, index) => (
                     <div 
                       key={index} 
                       onClick={() => handlePlaceClick(place)}
-                      className={`group bg-white rounded-xl overflow-hidden border-2 transition-all hover:shadow-2xl transform hover:-translate-y-1 cursor-pointer ${
+                      className={`group bg-white rounded-2xl overflow-hidden border-2 transition-all duration-300 hover:shadow-2xl cursor-pointer transform hover:-translate-y-1 ${
                         selectedPlace?.placeId === place.placeId 
-                          ? 'border-purple-600 ring-4 ring-purple-200' 
-                          : 'border-gray-200 hover:border-purple-400'
-                      }`}>
-                      <div className="relative h-48 overflow-hidden bg-gray-200">
+                          ? 'border-orange-500 ring-4 ring-orange-100' 
+                          : 'border-gray-100 hover:border-orange-200'
+                      }`}
+                    >
+                      <div className="relative h-48 sm:h-56 overflow-hidden">
                         <img 
                           src={place.image} 
                           alt={place.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                          onError={(e) => {
-                            e.target.src = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500';
-                          }}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         
-                        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-lg">
-                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                          <span className="text-sm font-bold text-gray-900">{place.rating || 'N/A'}</span>
-                        </div>
-                        
-                        {place.priceLevel >= 0 && (
-                          <div className="absolute top-3 left-3 flex flex-col gap-2">
-                            <div className="bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
-                              <span className="text-sm font-bold text-orange-600">{getPriceRange(place.priceLevel)}</span>
+                        {/* Status Badges */}
+                        <div className="absolute top-3 left-3 flex flex-col gap-2">
+                          <div className="bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
+                            <span className="text-sm font-bold text-orange-600">{getPriceRange(place.priceLevel)}</span>
+                          </div>
+                          {place.isGem ? (
+                            <div className="bg-purple-600/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                              <Sparkles className="w-3 h-3 text-white" />
+                              <span className="text-[10px] font-bold text-white uppercase tracking-wider">Hidden Gem</span>
                             </div>
-                            {place.isGem ? (
-                              <div className="bg-purple-600/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
-                                <Sparkles className="w-3 h-3 text-white" />
-                                <span className="text-[10px] font-bold text-white uppercase tracking-wider">Hidden Gem</span>
-                              </div>
-                            ) : (
-                              <div className="bg-blue-600/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
-                                <TrendingUp className="w-3 h-3 text-white" />
-                                <span className="text-[10px] font-bold text-white uppercase tracking-wider">Popular</span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        
-                        {place.userRatingsTotal && (
-                          <div className="absolute bottom-3 left-3 bg-black/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
-                            <span className="text-xs font-semibold text-white">{place.userRatingsTotal.toLocaleString()} reviews</span>
-                          </div>
-                        )}
+                          ) : (
+                            <div className="bg-blue-600/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                              <TrendingUp className="w-3 h-3 text-white" />
+                              <span className="text-[10px] font-bold text-white uppercase tracking-wider">Popular</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-lg shadow-lg flex items-center space-x-1">
+                          <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
+                          <span className="text-xs font-bold text-gray-900">{place.rating || 'N/A'}</span>
+                        </div>
 
                         {place.isOpen !== undefined && (
-                          <div className={`absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg ${
-                            place.isOpen 
-                              ? 'bg-green-500 text-white' 
-                              : 'bg-red-500 text-white'
+                          <div className={`absolute bottom-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold shadow-lg ${
+                            place.isOpen ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
                           }`}>
-                            {place.isOpen ? 'OPEN NOW' : 'CLOSED'}
+                            {place.isOpen ? 'OPEN' : 'CLOSED'}
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="p-5">
-                        <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-1 group-hover:text-purple-600 transition-colors">{place.name}</h3>
-                        
-                        {place.description && (
-                          <p className="text-sm text-gray-600 mb-3 line-clamp-2">{place.description}</p>
-                        )}
-                        
-                        <div className="flex items-start space-x-2 text-sm text-gray-500 mb-3">
-                          <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                          <span className="line-clamp-2">{place.address}</span>
+                        <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-1 group-hover:text-orange-600 transition-colors">{place.name}</h3>
+                        <div className="flex items-start space-x-1.5 text-xs text-gray-500 mb-3">
+                          <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                          <span className="line-clamp-1">{place.address}</span>
                         </div>
 
-                        <div className="flex gap-2 mb-3">
+                        <p className="text-sm text-gray-600 mb-4 line-clamp-2 italic">"{place.description}"</p>
+
+                        {/* Location Details (Only when selected) */}
+                        {selectedPlace?.placeId === place.placeId && (
+                          <div className="mb-4 p-3 bg-orange-50 rounded-xl border border-orange-100 animate-in fade-in slide-in-from-top-2">
+                            {loadingPlaceInfo ? (
+                              <div className="flex items-center justify-center space-x-2 py-1">
+                                <Loader className="w-4 h-4 text-orange-600 animate-spin" />
+                                <span className="text-xs font-bold text-orange-700">Locating...</span>
+                              </div>
+                            ) : placeTravelInfo ? (
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="bg-white p-2 rounded-lg text-center shadow-sm">
+                                  <p className="text-[9px] text-gray-400 uppercase font-bold">Distance</p>
+                                  <p className="text-sm font-black text-blue-600">{placeTravelInfo.distance}</p>
+                                </div>
+                                <div className="bg-white p-2 rounded-lg text-center shadow-sm">
+                                  <p className="text-[9px] text-gray-400 uppercase font-bold">Arrival</p>
+                                  <p className="text-sm font-black text-green-600">{placeTravelInfo.arrivalTime}</p>
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
+
+                        <div className="flex gap-2">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handlePlaceClick(place);
                             }}
-                            className="flex-1 flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white py-2.5 rounded-lg font-semibold transition-all text-sm"
+                            className={`flex-1 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center space-x-2 transition-all ${
+                              selectedPlace?.placeId === place.placeId
+                                ? 'bg-orange-600 text-white shadow-lg'
+                                : 'bg-gray-100 text-gray-700 hover:bg-orange-600 hover:text-white'
+                            }`}
                           >
-                            <MapPin className="w-4 h-4" />
-                            <span>Locate</span>
+                            <Navigation className="w-4 h-4" />
+                            <span>{selectedPlace?.placeId === place.placeId ? 'Located' : 'Locate'}</span>
                           </button>
-                          
-                          {place.website && (
-                            <a
-                              href={place.website}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-3 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-all text-sm"
-                              title="Visit Website"
-                            >
-                              🌐
-                            </a>
-                          )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`, '_blank');
+                            }}
+                            className="w-12 h-10 flex items-center justify-center bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 rounded-xl transition-colors"
+                            title="Open in Google Maps"
+                          >
+                            <ExternalLink className="w-5 h-5" />
+                          </button>
                         </div>
-
-                        {place.phone && (
-                          <div className="text-xs text-gray-500 flex items-center space-x-1">
-                            <span>📞</span>
-                            <span>{place.phone}</span>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
