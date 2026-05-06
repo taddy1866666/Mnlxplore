@@ -1,80 +1,93 @@
 import Link from 'next/link';
-import { Map, Mail, Github, Twitter, Facebook } from 'lucide-react';
+import { Map, Mail, Github, Twitter, Facebook, Heart, Navigation, Globe } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="bg-orange-500 p-2 rounded-lg">
-                <Map className="w-6 h-6 text-white" />
+    <footer className="relative bg-slate-950 pt-24 pb-12 overflow-hidden">
+      {/* Decorative background */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
+      
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-24 mb-16">
+          {/* Brand & Mission */}
+          <div className="md:col-span-6 space-y-8">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-2.5 rounded-2xl shadow-lg shadow-indigo-500/20">
+                <Map className="w-7 h-7 text-white" />
               </div>
-              <span className="text-2xl font-bold text-white">
-                MNL<span className="text-orange-400">XPLORE</span>
+              <span className="text-3xl font-black text-white tracking-tighter">
+                MNL<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-rose-400">XPLORE</span>
               </span>
             </div>
-            <p className="text-gray-400 mb-4 max-w-md">
-              Your AI-powered travel companion for exploring Metro Manila. Plan smarter trips with personalized itineraries and local insights.
+            <p className="text-slate-400 text-lg leading-relaxed max-w-md">
+              Democratizing travel planning in Metro Manila through artificial intelligence. We help you find the soul of the city, one itinerary at a time.
             </p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors">
-                <Github className="w-5 h-5" />
-              </a>
+            <div className="flex items-center gap-4">
+              {[
+                { icon: Facebook, href: '#' },
+                { icon: Twitter, href: '#' },
+                { icon: Github, href: 'https://github.com/taddy1866666/Mnlxplore' }
+              ].map((social, i) => (
+                <a 
+                  key={i} 
+                  href={social.href} 
+                  className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-indigo-400 hover:border-indigo-400/30 hover:bg-indigo-400/5 transition-all"
+                >
+                  <social.icon size={20} />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/" className="text-gray-400 hover:text-orange-400 transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/explore" className="text-gray-400 hover:text-orange-400 transition-colors">
-                  Explore
-                </Link>
-              </li>
-              <li>
-                <Link href="/planner" className="text-gray-400 hover:text-orange-400 transition-colors">
-                  Plan Trip
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard" className="text-gray-400 hover:text-orange-400 transition-colors">
-                  Dashboard
-                </Link>
-              </li>
+          {/* Navigation Columns */}
+          <div className="md:col-span-3">
+            <h3 className="text-white font-black uppercase tracking-widest text-xs mb-8">Navigation</h3>
+            <ul className="space-y-4">
+              {[
+                { label: 'Home', href: '/' },
+                { label: 'Explore', href: '/explore' },
+                { label: 'Trip Planner', href: '/planner' },
+                { label: 'My Dashboard', href: '/dashboard' }
+              ].map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="text-slate-400 hover:text-white transition-colors text-base font-medium">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Contact */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Contact</h3>
-            <ul className="space-y-2">
-              <li className="flex items-center space-x-2 text-gray-400">
-                <Mail className="w-4 h-4" />
-                <span>support@mnlxplore.com</span>
-              </li>
-              <li className="text-gray-400">Metro Manila, Philippines</li>
-            </ul>
+          {/* Contact & Legal */}
+          <div className="md:col-span-3">
+            <h3 className="text-white font-black uppercase tracking-widest text-xs mb-8">Get in Touch</h3>
+            <div className="space-y-6">
+              <div className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-indigo-400 mt-0.5" />
+                <div>
+                  <p className="text-white font-bold text-sm">Email Support</p>
+                  <p className="text-slate-400 text-sm">hello@mnlxplore.com</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Globe className="w-5 h-5 text-rose-400 mt-0.5" />
+                <div>
+                  <p className="text-white font-bold text-sm">Based In</p>
+                  <p className="text-slate-400 text-sm">Metro Manila, PH</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
-          <p>&copy; {new Date().getFullYear()} MNLXPLORE. All rights reserved.</p>
-          <p className="mt-2">Made with ❤️ for travelers in Metro Manila</p>
+        {/* Bottom Bar */}
+        <div className="pt-12 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-6">
+          <div className="text-slate-500 text-sm font-medium">
+            &copy; {new Date().getFullYear()} MNLXPLORE. Built for the modern traveler.
+          </div>
+          <div className="flex items-center gap-2 text-slate-500 text-sm font-medium">
+            Made with <Heart size={14} className="text-rose-500 fill-rose-500" /> in the Philippines
+          </div>
         </div>
       </div>
     </footer>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import apiClient from '../utils/api';
-import { Loader, Trash2, Calendar, DollarSign, MapPin as MapPinIcon, Eye } from 'lucide-react';
+import { Loader, Trash2, Calendar, DollarSign, MapPin, Eye, Compass, Sparkles, LayoutDashboard, ArrowRight } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Dashboard() {
   const [trips, setTrips] = useState([]);
@@ -21,16 +22,14 @@ export default function Dashboard() {
         window.location.href = '/login';
         return;
       }
-
       const response = await apiClient.get(`/api/trips`);
-
       setTrips(response.data.trips || []);
     } catch (err) {
       if (err.response?.status === 401) {
         localStorage.removeItem('token');
         window.location.href = '/login';
       } else {
-        setError('Failed to load trips');
+        setError('Unable to synchronize your journeys.');
       }
     } finally {
       setLoading(false);
@@ -38,116 +37,176 @@ export default function Dashboard() {
   };
 
   const handleDelete = async (tripId) => {
-    if (!confirm('Are you sure you want to delete this trip?')) return;
-    
+    if (!confirm('Discard this journey forever?')) return;
     try {
-      const token = localStorage.getItem('token');
       await apiClient.delete(`/api/trips/${tripId}`);
       setTrips(trips.filter(t => t._id !== tripId));
     } catch (err) {
-      setError('Failed to delete trip');
+      setError('Failed to remove the trip.');
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-[#020617] text-slate-100 selection:bg-indigo-500/30 overflow-x-hidden">
+      {/* Background Orbs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-indigo-500/5 blur-[120px]" />
+        <div className="absolute bottom-[10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-rose-500/5 blur-[120px]" />
+      </div>
+
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <main className="relative max-w-7xl mx-auto px-6 py-24 lg:py-32">
         {/* Header */}
-        <div className="mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-3">
-            My <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Dashboard</span>
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-gray-600">Manage and view your saved trips</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8"
+        >
+          <div>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-bold mb-6">
+              <LayoutDashboard size={16} />
+              COMMAND CENTER
+            </span>
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight">
+              Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-rose-400">Journeys</span>
+            </h1>
+            <p className="text-slate-400 text-lg mt-4 max-w-xl">
+              Access and manage your AI-crafted itineraries and planned adventures across Metro Manila.
+            </p>
+          </div>
+          
+          <Link
+            href="/planner"
+            className="premium-button px-8 py-4 text-sm group"
+          >
+            <Sparkles size={18} />
+            PLAN NEW TRIP
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </motion.div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 sm:px-6 py-3 sm:py-4 rounded-xl mb-6 text-sm sm:text-base">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 font-bold mb-12 flex items-center gap-3"
+          >
+            <Compass size={20} />
             {error}
-          </div>
+          </motion.div>
         )}
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center h-48 sm:h-64 bg-white rounded-2xl shadow-lg">
-            <Loader className="animate-spin text-blue-600 mb-3 sm:mb-4 w-8 h-8 sm:w-12 sm:h-12" />
-            <p className="text-gray-600 text-base sm:text-lg">Loading your trips...</p>
+          <div className="flex flex-col items-center justify-center py-32 space-y-6">
+            <Loader className="animate-spin text-indigo-500" size={48} />
+            <p className="text-slate-500 font-black uppercase tracking-widest text-sm">Synchronizing Data...</p>
           </div>
         ) : trips.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-lg p-8 sm:p-12 text-center">
-            <div className="bg-gradient-to-br from-blue-100 to-indigo-100 w-16 h-16 sm:w-24 sm:h-24 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-              <MapPinIcon className="w-8 h-8 sm:w-12 sm:h-12 text-blue-600" />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-card p-12 sm:p-24 text-center border-dashed border-white/10"
+          >
+            <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-8 border border-white/10">
+              <Compass size={48} className="text-slate-600" />
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">No trips yet!</h3>
-            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 max-w-md mx-auto">Start planning your first adventure in Metro Manila</p>
+            <h3 className="text-2xl sm:text-3xl font-black mb-4">No Journeys Found</h3>
+            <p className="text-slate-500 text-lg mb-10 max-w-md mx-auto">
+              Your dashboard looks a bit empty. Ready to start your first AI-guided adventure?
+            </p>
             <Link
               href="/planner"
-              className="inline-flex items-center space-x-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-300 active:scale-95 sm:hover:scale-105 shadow-lg text-sm sm:text-base"
+              className="premium-button inline-flex px-12 py-5"
             >
-              <span>Plan Your First Trip</span>
+              CREATE FIRST TRIP
             </Link>
-          </div>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
             {trips.map((trip) => (
-              <div
+              <motion.div
                 key={trip._id}
-                className="group bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200 active:scale-95 sm:hover:-translate-y-1"
+                variants={itemVariants}
+                className="glass-card group h-full flex flex-col"
               >
-                {/* Card Header */}
-                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-4 sm:p-6 text-white">
-                  <h3 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2 line-clamp-2">{trip.destination}</h3>
-                  <span className="inline-block bg-white/20 backdrop-blur-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium">
-                    {trip.status || 'Completed'}
-                  </span>
+                {/* Visual Header */}
+                <div className="relative h-40 overflow-hidden bg-gradient-to-br from-indigo-500/20 to-purple-600/20">
+                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent)]" />
+                   <div className="absolute top-6 left-8">
+                      <h3 className="text-2xl font-black text-white group-hover:text-indigo-300 transition-colors line-clamp-1">{trip.destination}</h3>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="px-2.5 py-1 rounded-lg bg-white/10 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest">
+                          {trip.status || 'Archived'}
+                        </span>
+                        <span className="text-[10px] text-white/40 font-bold tracking-widest">ID: {trip._id.slice(-6).toUpperCase()}</span>
+                      </div>
+                   </div>
+                   <div className="absolute -bottom-2 -right-2 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all">
+                      <MapPin size={120} />
+                   </div>
                 </div>
 
-                {/* Card Body */}
-                <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                  <div className="flex items-center space-x-3 text-gray-700">
-                    <div className="bg-orange-100 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
-                      <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
+                <div className="p-8 space-y-6 flex-1 flex flex-col">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Budget</p>
+                      <p className="text-lg font-black text-emerald-400">₱{trip.budget?.toLocaleString()}</p>
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-xs sm:text-sm text-gray-500">Budget</p>
-                      <p className="font-semibold text-sm sm:text-base truncate">₱{trip.budget?.toLocaleString()}</p>
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Duration</p>
+                      <p className="text-lg font-black text-indigo-400">{trip.days} Day{trip.days > 1 ? 's' : ''}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-3 text-gray-700">
-                    <div className="bg-blue-100 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
-                      <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                  <div className="flex items-center gap-3 py-4 border-y border-white/5">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-400">
+                      <Calendar size={18} />
                     </div>
                     <div>
-                      <p className="text-xs sm:text-sm text-gray-500">Duration</p>
-                      <p className="font-semibold text-sm sm:text-base">{trip.days} {trip.days === 1 ? 'day' : 'days'}</p>
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Created On</p>
+                      <p className="text-sm font-bold text-slate-300">
+                        {new Date(trip.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="pt-3 sm:pt-4 border-t border-gray-100">
-                    <p className="text-xs sm:text-sm text-gray-500">Created on</p>
-                    <p className="font-medium text-gray-700 text-xs sm:text-sm">{new Date(trip.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                  <div className="flex gap-3 pt-4 mt-auto">
+                    <Link
+                      href={`/planner?id=${trip._id}`}
+                      className="flex-1 flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white py-4 rounded-2xl font-black text-xs transition-all active:scale-95 shadow-lg shadow-indigo-500/20"
+                    >
+                      <Eye size={16} />
+                      REVISIT
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(trip._id)}
+                      className="w-14 flex items-center justify-center bg-white/5 border border-white/10 text-slate-500 hover:text-rose-400 hover:border-rose-400/30 hover:bg-rose-400/5 rounded-2xl transition-all active:scale-90"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </div>
                 </div>
-
-                {/* Card Footer */}
-                <div className="px-4 sm:px-6 pb-4 sm:pb-6 flex gap-2 sm:gap-3">
-                  <button className="flex-1 flex items-center justify-center space-x-1 sm:space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white py-2 sm:py-3 rounded-xl font-semibold transition-all duration-200 active:scale-95 sm:hover:scale-105 text-xs sm:text-sm">
-                    <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    <span>View</span>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(trip._id)}
-                    className="px-2.5 sm:px-4 py-2 sm:py-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-all duration-200 active:scale-95 sm:hover:scale-105"
-                  >
-                    <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
-                </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
-      </div>
+      </main>
 
       <Footer />
     </div>
