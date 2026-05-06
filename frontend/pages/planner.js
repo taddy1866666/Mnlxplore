@@ -27,6 +27,7 @@ export default function Planner() {
   const [placeTravelInfo, setPlaceTravelInfo] = useState(null);
   const [loadingPlaceInfo, setLoadingPlaceInfo] = useState(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [currentDestination, setCurrentDestination] = useState('');
 
   const popularDestinations = [
     { name: 'BGC, Taguig', icon: '🏙️', desc: 'Modern business district' },
@@ -151,14 +152,21 @@ export default function Planner() {
     }
   };
 
-  // Debounced fetch when destination changes (user typing)
+  // Sync typed destination into currentDestination state
   useEffect(() => {
-    if (!watchedDestination || watchedDestination.length < 3) return;
-    const timer = setTimeout(() => {
-      fetchSuggestions(watchedDestination, selectedTheme);
-    }, 800);
-    return () => clearTimeout(timer);
+    if (watchedDestination && watchedDestination.length >= 3) {
+      setCurrentDestination(watchedDestination);
+    }
   }, [watchedDestination]);
+
+  // Auto-fetch suggestions whenever destination OR theme changes (debounced)
+  useEffect(() => {
+    if (!currentDestination || currentDestination.length < 3) return;
+    const timer = setTimeout(() => {
+      fetchSuggestions(currentDestination, selectedTheme);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [currentDestination, selectedTheme]);
 
 
   const calculateTravelInfo = async (destination) => {
@@ -365,8 +373,8 @@ export default function Planner() {
                       type="button"
                       onClick={() => {
                         setValue('destination', dest.name);
+                        setCurrentDestination(dest.name); // triggers useEffect immediately
                         setShowSuggestions(false);
-                        fetchSuggestions(dest.name, selectedTheme);
                       }}
                       className="flex items-center space-x-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-200 transition-all text-left"
                     >
@@ -442,7 +450,7 @@ export default function Planner() {
                       onClick={() => {
                         const newTheme = theme.id === selectedTheme ? '' : theme.id;
                         setSelectedTheme(newTheme);
-                        fetchSuggestions(watchedDestination, newTheme);
+                        // useEffect([currentDestination, selectedTheme]) handles the re-fetch
                       }}
                       className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all text-left ${
                         selectedTheme === theme.id
@@ -587,11 +595,13 @@ export default function Planner() {
                 </div>
               )}
 
-              {/* Loading state for suggestions */}
-              {loadingSuggestions && selectedTheme && (
-                <div className="mt-6 flex items-center justify-center space-x-3 py-6 text-gray-400">
-                  <Loader className="w-5 h-5 animate-spin" />
-                  <span className="text-sm font-medium">Finding nearby {themePreferences.find(t => t.id === selectedTheme)?.name} places...</span>
+              {/* Loading state for suggestions — shows for ALL fetches, not just themed */}
+              {loadingSuggestions && (
+                <div className="mt-6 flex items-center justify-center space-x-3 py-5 bg-orange-50 rounded-xl border border-orange-100">
+                  <Loader className="w-5 h-5 animate-spin text-orange-500" />
+                  <span className="text-sm font-semibold text-orange-700">
+                    Finding {selectedTheme ? themePreferences.find(t => t.id === selectedTheme)?.name : 'nearby'} places near <strong>{currentDestination}</strong>...
+                  </span>
                 </div>
               )}
             </div>

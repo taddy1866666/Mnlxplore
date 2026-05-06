@@ -382,25 +382,29 @@ exports.getCuratedPlaces = async (req, res) => {
 
     const location = geocodeResponse.data.results[0].geometry.location;
 
-    // Map themes to place types - limit to 2 types max for speed
-    const themeTypeMap = {
-      'romantic': ['restaurant', 'park'],
-      'food': ['restaurant', 'cafe'],
-      'cafe': ['cafe', 'bakery'],
-      'cultural': ['museum', 'tourist_attraction'],
-      'shopping': ['shopping_mall', 'department_store'],
-      'nightlife': ['night_club', 'bar']
+    // Map themes to place types AND keywords for more targeted Google Maps results
+    const themeConfig = {
+      'romantic':  { types: ['restaurant', 'park'],           keyword: 'romantic' },
+      'food':      { types: ['restaurant', 'cafe'],           keyword: 'restaurant' },
+      'cafe':      { types: ['cafe', 'bakery'],               keyword: 'coffee cafe' },
+      'cultural':  { types: ['museum', 'tourist_attraction'], keyword: 'museum heritage landmark' },
+      'shopping':  { types: ['shopping_mall', 'store'],       keyword: 'mall shopping' },
+      'nightlife': { types: ['night_club', 'bar'],            keyword: 'bar nightlife' }
     };
 
-    const types = (themeTypeMap[theme] || ['tourist_attraction', 'restaurant']).slice(0, 2);
+    const config = themeConfig[theme] || { types: ['tourist_attraction', 'restaurant'], keyword: '' };
+    const types = config.types.slice(0, 2);
+    const keyword = config.keyword;
 
-    // Fetch places for each type - NO pagination, NO per-place detail calls
+    // Fetch places for each type - parallel, no per-place detail calls for speed
     const allPlaces = [];
     const seenPlaceIds = new Set();
 
     await Promise.all(types.map(async (type) => {
       try {
-        const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.lat},${location.lng}&radius=5000&type=${type}&key=${GOOGLE_MAPS_API_KEY}`;
+        const keywordParam = keyword ? `&keyword=${encodeURIComponent(keyword)}` : '';
+        // radius=3000 keeps results tight around the destination; keyword improves relevance
+        const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.lat},${location.lng}&radius=3000&type=${type}${keywordParam}&key=${GOOGLE_MAPS_API_KEY}`;
         const placesResponse = await axios.get(placesUrl);
 
         if (placesResponse.data.results) {
@@ -416,15 +420,22 @@ exports.getCuratedPlaces = async (req, res) => {
       }
     }));
 
-    // Balance "Sikat" (Popular) and "Hidden Gems"
-    const popularPlaces = allPlaces
-      .filter(p => (p.user_ratings_total || 0) >= 200 && (p.rating || 0) >= 4.0)
-      .sort((a, b) => (b.user_ratings_total || 0) - (a.user_ratings_total || 0))
+    // Score = rating * log(reviews + 1) — balances quality and popularity
+    const scored = allPlaces
+      .filter(p => (p.rating || 0) >= 3.8 && (p.user_ratings_total || 0) >= 10)
+      .map(p => ({
+        ...p,
+        _score: (p.rating || 0) * Math.log((p.user_ratings_total || 1) + 1)
+      }))
+      .sort((a, b) => b._score - a._score);
+
+    // Top popular + hidden gems (lower review count but high rating)
+    const popularPlaces = scored
+      .filter(p => (p.user_ratings_total || 0) >= 100)
       .slice(0, 8);
 
-    const hiddenGems = allPlaces
-      .filter(p => (p.user_ratings_total || 0) < 200 && (p.user_ratings_total || 0) > 5 && (p.rating || 0) >= 4.2)
-      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+    const hiddenGems = scored
+      .filter(p => (p.user_ratings_total || 0) < 100 && (p.rating || 0) >= 4.2)
       .slice(0, 6);
 
     const topPlaces = [...popularPlaces, ...hiddenGems];
