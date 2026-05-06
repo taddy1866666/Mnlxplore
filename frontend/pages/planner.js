@@ -494,8 +494,8 @@ export default function Planner() {
                       <Sparkles className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Curated Places for You</h2>
-                      <p className="text-gray-600">Handpicked {selectedTheme || 'popular'} spots in {tripData.destination}</p>
+                      <h2 className="text-2xl font-bold text-gray-900">Suggested {selectedTheme ? themePreferences.find(t => t.id === selectedTheme)?.name : ''} Places</h2>
+                      <p className="text-gray-600">Discover the best spots in {tripData?.destination || 'the area'}</p>
                     </div>
                   </div>
                   <div className="bg-purple-100 px-4 py-2 rounded-full">
