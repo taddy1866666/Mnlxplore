@@ -248,7 +248,10 @@ export default function Planner() {
       });
       setRecommendations(recsResponse.data);
 
-      const itineraryResponse = await apiClient.post(`/api/trip/generate`, tripInfo);
+      const itineraryResponse = await apiClient.post(`/api/trip/generate`, {
+        ...tripInfo,
+        suggestedPlaces: curatedPlaces
+      });
       setItinerary(itineraryResponse.data.itinerary);
     } catch (err) {
       setError(err.response?.data?.message || 'Error generating itinerary');

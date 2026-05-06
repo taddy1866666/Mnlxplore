@@ -7,7 +7,7 @@ const openai = new OpenAI({
 
 exports.generateItinerary = async (req, res) => {
   try {
-    const { destination, budget, days, preferences } = req.body;
+    const { destination, budget, days, preferences, travelMode, suggestedPlaces } = req.body;
     const userId = req.user?.userId;
 
     // Validate input
@@ -45,14 +45,20 @@ exports.generateItinerary = async (req, res) => {
       });
     }
 
+    // Format suggested places for context
+    const placesContext = suggestedPlaces && suggestedPlaces.length > 0
+      ? `\nRecommended places from Google Maps (YOU MUST PRIORITIZE THESE):\n${suggestedPlaces.slice(0, 8).map(p => `- ${p.name}: ${p.description}`).join('\n')}`
+      : '';
+
     // Generate itinerary using OpenAI
     const sanitizedPreferences = Array.isArray(preferences) ? preferences.join(', ') : 'General tourism';
     const prompt = `Create a detailed ${parsedDays}-day travel itinerary for ${sanitizedDestination}, Philippines with a budget of ₱${parsedBudget}. 
     
 Preferences: ${sanitizedPreferences}
+Travel Mode: ${travelMode || 'walking'}${placesContext}
 
 Include:
-1. Daily schedule with specific attractions, restaurants, and activities
+1. Daily schedule using the recommended places listed above
 2. Estimated costs for each activity (based on Philippine Peso)
 3. Transportation recommendations (Walking: ₱0, Motorcycle: ~₱70/50km, Driving: ~₱70/10km, Transit: ₱16.25 base + ₱1.47/km)
 4. Best time to visit each location
