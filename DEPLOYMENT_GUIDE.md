@@ -6,37 +6,28 @@ Your project has been successfully initialized with Git and pushed to GitHub. Fo
 The code is already pushed to:
 **[https://github.com/taddy1866666/Mnlxplore.git](https://github.com/taddy1866666/Mnlxplore.git)**
 
-## 2. Frontend Deployment (Vercel)
-Vercel is the best place for your Next.js frontend.
+## 2. Deployment (Vercel Services)
+You are using **Vercel Experimental Services**, which allows you to host both the frontend and backend in a single Vercel project.
 
 1.  Go to [Vercel](https://vercel.com/) and log in with your GitHub account.
 2.  Click **"Add New..."** > **"Project"**.
 3.  Import the `Mnlxplore` repository.
 4.  In the **Configure Project** screen:
-    - **Framework Preset:** Next.js (should be auto-detected).
-    - **Root Directory:** Click "Edit" and select the `frontend` folder.
-    - **Environment Variables:** Add any variables from your `frontend/.env.local` (e.g., `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`).
-    - **Note:** You will also need to add `NEXT_PUBLIC_API_URL` once your backend is deployed (see below).
+    - **Framework Preset:** Select **"Services"** (This is crucial!).
+    - **Root Directory:** Keep it as the project root (don't select `frontend`).
+    - **Environment Variables:** Add your variables for both:
+        - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (for frontend)
+        - `MONGODB_URI`, `JWT_SECRET`, etc. (for backend)
+        - `NEXT_PUBLIC_API_URL`: Set this to `/_/backend` (relative path) or leave blank if you update `api.js`.
 5.  Click **Deploy**.
 
-## 3. Backend Deployment (Render - Recommended)
-Since your backend is a standard Node.js/Express server, **Render** or **Railway** are easier to set up than Vercel for this specific structure.
+## 3. Connecting Frontend and Backend
+Since they share the same domain under Vercel Services:
+- The frontend is at `/`
+- The backend is at `/_/backend`
 
-### Using Render:
-1.  Go to [Render.com](https://render.com/) and log in with GitHub.
-2.  Click **"New +"** > **"Web Service"**.
-3.  Connect your GitHub repo.
-4.  In the settings:
-    - **Name:** `mnlxplore-backend`
-    - **Root Directory:** `backend`
-    - **Runtime:** `Node`
-    - **Build Command:** `npm install`
-    - **Start Command:** `node server.js`
-5.  **Environment Variables:** Add your `.env` variables:
-    - `MONGODB_URI`: Your MongoDB connection string (e.g., from MongoDB Atlas).
-    - `JWT_SECRET`: A random strong string.
-    - `CLIENT_URL`: The URL of your Vercel frontend (e.g., `https://mnlxplore.vercel.app`).
-6.  Click **Create Web Service**.
+In your `frontend/utils/api.js`, you can set `NEXT_PUBLIC_API_URL` to `/_/backend` in your Vercel environment variables.
+
 
 ## 4. Connecting Frontend and Backend
 Once your backend is live on Render (e.g., `https://mnlxplore-backend.onrender.com`):
