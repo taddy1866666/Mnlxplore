@@ -384,12 +384,12 @@ exports.getCuratedPlaces = async (req, res) => {
 
     // Map themes to place types - EXPANDED
     const themeTypeMap = {
-      'romantic': ['restaurant', 'park', 'cafe', 'bar', 'tourist_attraction'],
-      'food': ['restaurant', 'cafe', 'bakery', 'meal_takeaway', 'meal_delivery'],
-      'cafe': ['cafe', 'bakery', 'coffee'],
-      'cultural': ['museum', 'art_gallery', 'church', 'tourist_attraction', 'library', 'university'],
-      'shopping': ['shopping_mall', 'department_store', 'clothing_store', 'store'],
-      'nightlife': ['night_club', 'bar', 'casino', 'bowling_alley']
+      'romantic': ['restaurant', 'park', 'cafe', 'bar', 'tourist_attraction', 'movie_theater'],
+      'food': ['restaurant', 'cafe', 'bakery', 'meal_takeaway', 'meal_delivery', 'market'],
+      'cafe': ['cafe', 'bakery', 'coffee_shop'],
+      'cultural': ['museum', 'art_gallery', 'church', 'tourist_attraction', 'library', 'heritage_site'],
+      'shopping': ['shopping_mall', 'department_store', 'clothing_store', 'store', 'market'],
+      'nightlife': ['night_club', 'bar', 'casino', 'pub', 'lounge']
     };
 
     const types = themeTypeMap[theme] || ['tourist_attraction', 'restaurant', 'cafe'];
