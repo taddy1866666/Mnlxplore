@@ -71,15 +71,19 @@ export default function Planner() {
     }
 
     let transport = Math.round(dailyTransport * days);
+    let error = null;
 
-    // Ensure transport doesn't exceed 50% of budget as a safety measure
-    transport = Math.min(transport, budget * 0.5);
+    if (transport > budget) {
+      error = "Insufficient budget for transportation. Consider increasing your budget or choosing a cheaper travel mode.";
+    } else if (transport > budget * 0.7) {
+      error = "Warning: Transport takes up more than 70% of your budget. You might not have enough for food and activities.";
+    }
 
-    const remainingBudget = budget - transport;
+    const remainingBudget = Math.max(0, budget - transport);
     const food = Math.round(remainingBudget * 0.6);
     const activities = Math.round(remainingBudget * 0.4);
     
-    return { food, transport, activities };
+    return { food, transport, activities, budgetError: error };
   };
 
   const getPriceRange = (level) => {
@@ -526,6 +530,7 @@ export default function Planner() {
 
         {itinerary && budgetBreakdown && (
           <div className="space-y-6">
+            
             {/* Curated Places with Images */}
             {curatedPlaces && curatedPlaces.length > 0 && (
               <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 animate-fade-in">
@@ -736,8 +741,22 @@ export default function Planner() {
                 <div className="bg-gradient-to-br from-green-400 to-green-600 p-3 rounded-xl">
                   <PieChart className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Budget Breakdown</h2>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Budget Breakdown</h2>
+                  <p className="text-gray-600">How your ₱{tripData?.budget?.toLocaleString()} will be spent</p>
+                </div>
               </div>
+
+              {budgetBreakdown.budgetError && (
+                <div className={`mb-6 p-4 rounded-xl flex items-start space-x-3 border-2 ${
+                  budgetBreakdown.budgetError.includes('Warning') 
+                    ? 'bg-yellow-50 border-yellow-200 text-yellow-800' 
+                    : 'bg-red-50 border-red-200 text-red-800'
+                }`}>
+                  <div className="mt-0.5">⚠️</div>
+                  <p className="text-sm font-semibold">{budgetBreakdown.budgetError}</p>
+                </div>
+              )}
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl border-2 border-orange-200">
