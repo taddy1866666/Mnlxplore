@@ -530,8 +530,21 @@ export default function Planner() {
                         </div>
                         
                         {place.priceLevel >= 0 && (
-                          <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
-                            <span className="text-sm font-bold text-orange-600">{getPriceRange(place.priceLevel)}</span>
+                          <div className="absolute top-3 left-3 flex flex-col gap-2">
+                            <div className="bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
+                              <span className="text-sm font-bold text-orange-600">{getPriceRange(place.priceLevel)}</span>
+                            </div>
+                            {place.isGem ? (
+                              <div className="bg-purple-600/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                                <Sparkles className="w-3 h-3 text-white" />
+                                <span className="text-[10px] font-bold text-white uppercase tracking-wider">Hidden Gem</span>
+                              </div>
+                            ) : (
+                              <div className="bg-blue-600/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                                <TrendingUp className="w-3 h-3 text-white" />
+                                <span className="text-[10px] font-bold text-white uppercase tracking-wider">Popular</span>
+                              </div>
+                            )}
                           </div>
                         )}
                         

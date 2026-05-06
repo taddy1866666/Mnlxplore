@@ -436,19 +436,19 @@ exports.getCuratedPlaces = async (req, res) => {
       }
     }
 
-    // Include ALL places - no rating filter, show everything
-    const topPlaces = allPlaces
-      .filter(p => p.name) // Only filter out places without names
-      .sort((a, b) => {
-        // Sort by rating first (if available), then by number of reviews
-        const ratingA = a.rating || 0;
-        const ratingB = b.rating || 0;
-        
-        if (ratingB !== ratingA) {
-          return ratingB - ratingA;
-        }
-        return (b.user_ratings_total || 0) - (a.user_ratings_total || 0);
-      });
+    // Balance "Sikat" (Popular) and "Hidden Gems"
+    const popularPlaces = allPlaces
+      .filter(p => (p.user_ratings_total || 0) >= 200 && (p.rating || 0) >= 4.0)
+      .sort((a, b) => (b.user_ratings_total || 0) - (a.user_ratings_total || 0))
+      .slice(0, 10);
+
+    const hiddenGems = allPlaces
+      .filter(p => (p.user_ratings_total || 0) < 200 && (p.user_ratings_total || 0) > 5 && (p.rating || 0) >= 4.2)
+      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+      .slice(0, 10);
+
+    // Combine them to show a variety
+    const topPlaces = [...popularPlaces, ...hiddenGems];
 
     // Enrich with REAL photos from Google
     const enrichedPlaces = await Promise.all(
@@ -489,6 +489,7 @@ exports.getCuratedPlaces = async (req, res) => {
           placeId: place.place_id,
           types: place.types,
           userRatingsTotal: place.user_ratings_total,
+          isGem: (place.user_ratings_total || 0) < 200,
           description: description || `Popular ${place.types[0].replace('_', ' ')} in ${destination}`,
           website: website,
           phone: phone,
