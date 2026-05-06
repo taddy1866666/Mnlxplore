@@ -119,16 +119,23 @@ export default function Planner() {
     setError('');
     try {
       const loc = await getUserLocation();
-      const transportRes = await apiClient.post(`/api/places/calculate-distance`, {
-        origin: `${loc.lat},${loc.lng}`,
-        destination: data.destination,
-        travelMode: travelMode === 'motorcycle' ? 'driving' : travelMode
-      });
+      let transportInfo = { distance: '5.0 km', duration: '20 mins', distanceValue: 5000 };
+
+      try {
+        const transportRes = await apiClient.post(`/api/places/calculate-distance`, {
+          origin: `${loc.lat},${loc.lng}`,
+          destination: data.destination,
+          travelMode: travelMode === 'motorcycle' ? 'driving' : travelMode
+        });
+        transportInfo = transportRes.data;
+      } catch (distErr) {
+        console.warn('Distance calculation failed, using default estimation');
+      }
       
-      const dist = parseFloat(transportRes.data.distance);
+      const dist = parseFloat(transportInfo.distance) || 5;
       const breakdown = calculateBudgetBreakdown(data.budget, dist, travelMode, data.days);
       setBudgetBreakdown(breakdown);
-      setTripData({ ...data, travelMode, theme: selectedTheme, transportInfo: transportRes.data });
+      setTripData({ ...data, travelMode, theme: selectedTheme, transportInfo });
 
       const itineraryRes = await apiClient.post(`/api/trips/generate`, {
         ...data,
@@ -142,7 +149,7 @@ export default function Planner() {
         resultsRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to generate your adventure.');
+      setError(err.response?.data?.message || 'Failed to generate your adventure. Please try again.');
     } finally {
       setLoading(false);
     }

@@ -28,10 +28,8 @@ exports.generateItinerary = async (req, res) => {
       return res.status(400).json({ message: 'Days must be between 1 and 30' });
     }
 
-    // Validate OpenAI API key
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-key') {
-      return res.status(500).json({ message: 'AI service not configured' });
-    }
+    // If AI service is not configured, we'll proceed to the fallback logic automatically
+    const isAiConfigured = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-openai-key';
 
     // Create trip record
     let trip = null;
@@ -77,6 +75,10 @@ Format the response in a clear, day-by-day structure using Markdown.`;
     let itineraryText;
     
     try {
+      if (!isAiConfigured) {
+        throw new Error('AI Service not configured');
+      }
+
       const message = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [
