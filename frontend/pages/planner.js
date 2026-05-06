@@ -63,9 +63,9 @@ export default function Planner() {
       // Round trip gas (50km/L) + ₱150 daily parking
       dailyTransport = ((distanceKm / 50) * GAS_PRICE * 2) + 150;
     } else if (mode === 'transit') {
-      // Round trip train/bus (₱16.25 base + ₱1.47/km) + ₱50 daily trikes/jeeps
-      const oneWay = Math.max(15, 16.25 + (distanceKm * 1.47));
-      dailyTransport = (oneWay * 2) + 50;
+      // ₱20 base (transfer buffer) + ₱2/km + ₱120 daily connecting rides (jeep/trike)
+      const oneWay = 20 + (distanceKm * 2);
+      dailyTransport = (oneWay * 2) + 120;
     } else if (mode === 'walking') {
       dailyTransport = 0;
     }
