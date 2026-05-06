@@ -128,33 +128,31 @@ export default function Planner() {
     });
   };
 
-  // Automatically fetch curated places when destination or theme changes
   const watchedDestination = watch('destination');
-  
-  useEffect(() => {
-    const fetchEarlySuggestions = async () => {
-      const dest = watchedDestination;
-      if (dest && dest.length >= 3) {
-        try {
-          const response = await apiClient.post(`/api/places/curated`, {
-            destination: dest,
-            theme: selectedTheme
-          });
-          if (response.data && response.data.places) {
-            setCuratedPlaces(response.data.places);
-          }
-        } catch (err) {
-          console.error('Early fetch error:', err);
-        }
+
+  // Standalone fetch function - can be called directly from theme click or via useEffect
+  const fetchSuggestions = async (dest, theme) => {
+    if (!dest || dest.length < 3) return;
+    try {
+      const response = await apiClient.post(`/api/places/curated`, {
+        destination: dest,
+        theme: theme
+      });
+      if (response.data && response.data.places) {
+        setCuratedPlaces(response.data.places);
       }
-    };
-    
+    } catch (err) {
+      console.error('Suggestion fetch error:', err);
+    }
+  };
+
+  // Debounced fetch when destination changes (user typing)
+  useEffect(() => {
     const timer = setTimeout(() => {
-      fetchEarlySuggestions();
-    }, 1000); // Debounce search
-    
+      fetchSuggestions(watchedDestination, selectedTheme);
+    }, 800);
     return () => clearTimeout(timer);
-  }, [watchedDestination, selectedTheme]);
+  }, [watchedDestination]);
 
   const calculateTravelInfo = async (destination) => {
     if (!userLocation) return;
@@ -423,7 +421,12 @@ export default function Planner() {
                     <button
                       key={theme.id}
                       type="button"
-                      onClick={() => setSelectedTheme(theme.id === selectedTheme ? '' : theme.id)}
+                      onClick={() => {
+                        const newTheme = theme.id === selectedTheme ? '' : theme.id;
+                        setSelectedTheme(newTheme);
+                        // Immediately fetch suggestions with the new theme
+                        fetchSuggestions(watchedDestination, newTheme);
+                      }}
                       className={`p-3 rounded-xl border-2 transition-all ${
                         selectedTheme === theme.id
                           ? 'border-purple-500 bg-purple-50'
