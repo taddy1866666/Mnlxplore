@@ -222,7 +222,7 @@ export default function Planner() {
           const distResponse = await apiClient.post(`/api/places/calculate-distance`, {
             origin: `${currentLoc.lat},${currentLoc.lng}`,
             destination: tripInfo.destination,
-            travelMode: travelMode
+            travelMode: travelMode === 'motorcycle' ? 'driving' : travelMode
           });
           setTravelInfo(distResponse.data);
           distanceKm = (distResponse.data.distanceValue || 5000) / 1000;
@@ -244,7 +244,7 @@ export default function Planner() {
         destination: tripInfo.destination,
         preferences: tripInfo.preferences,
         budget: tripInfo.budget,
-        travelMode: tripInfo.travelMode
+        travelMode: tripInfo.travelMode === 'motorcycle' ? 'driving' : tripInfo.travelMode
       });
       setRecommendations(recsResponse.data);
 

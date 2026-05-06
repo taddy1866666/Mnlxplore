@@ -25,6 +25,7 @@ export default function AdvancedPlanner() {
 
   const travelModes = [
     { id: 'walking', name: 'Walking', icon: '🚶', time: 'Slowest' },
+    { id: 'motorcycle', name: 'Motorcycle', icon: '🛵', time: 'Fast' },
     { id: 'driving', name: 'Driving', icon: '🚗', time: 'Fastest' },
     { id: 'transit', name: 'Transit', icon: '🚌', time: 'Moderate' }
   ];
@@ -44,7 +45,7 @@ export default function AdvancedPlanner() {
         destination,
         preferences: selectedTheme ? [selectedTheme] : ['tourist_attraction'],
         budget: parseFloat(budget),
-        travelMode
+        travelMode: travelMode === 'motorcycle' ? 'driving' : travelMode
       });
 
       setRecommendations(response.data);
