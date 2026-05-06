@@ -51,10 +51,26 @@ export default function Planner() {
     { id: 'transit', name: 'Transit', icon: '🚌', desc: 'Public transport' }
   ];
 
-  const calculateBudgetBreakdown = (budget) => {
-    const food = Math.round(budget * 0.4);
-    const transport = Math.round(budget * 0.3);
-    const activities = Math.round(budget * 0.3);
+  const calculateBudgetBreakdown = (budget, distanceKm = 0, mode = 'walking') => {
+    let transport = 0;
+    
+    if (mode === 'driving') {
+      // Estimated gas cost: 10km/L at ₱65/L
+      transport = Math.round((distanceKm / 10) * 65);
+    } else if (mode === 'transit') {
+      // Estimated fare: ₱13 base (4km) + ₱2 per km after
+      transport = distanceKm <= 4 ? 13 : Math.round(13 + (distanceKm - 4) * 2);
+    } else if (mode === 'walking') {
+      transport = 0;
+    }
+
+    // Ensure transport doesn't exceed 50% of budget as a safety measure
+    transport = Math.min(transport, budget * 0.5);
+
+    const remainingBudget = budget - transport;
+    const food = Math.round(remainingBudget * 0.6);
+    const activities = Math.round(remainingBudget * 0.4);
+    
     return { food, transport, activities };
   };
 
@@ -164,9 +180,19 @@ export default function Planner() {
 
     try {
       // Calculate travel info from user location to destination
+      let distanceKm = 0;
       if (userLocation) {
-        await calculateTravelInfo(tripInfo.destination);
+        const distResponse = await apiClient.post(`/api/places/calculate-distance`, {
+          origin: `${userLocation.lat},${userLocation.lng}`,
+          destination: tripInfo.destination,
+          travelMode: travelMode
+        });
+        setTravelInfo(distResponse.data);
+        distanceKm = distResponse.data.distanceValue / 1000;
       }
+
+      // Update budget with accurate transport cost
+      setBudgetBreakdown(calculateBudgetBreakdown(tripInfo.budget, distanceKm, travelMode));
 
       const recsResponse = await apiClient.post(`/api/places/recommendations`, {
         destination: tripInfo.destination,
