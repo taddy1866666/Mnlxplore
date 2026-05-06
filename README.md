@@ -364,3 +364,5 @@ Coming soon! 📷
 **Made with ❤️ for travelers and tourism in Metro Manila**
 
 🌟 If you find this helpful, please consider giving it a star! ⭐
+   
+ 
