@@ -503,7 +503,8 @@ export default function Planner() {
                   </div>
                 </div>
 
-                <div                  {curatedPlaces.map((place, index) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {curatedPlaces.map((place, index) => (
                     <div 
                       key={index} 
                       onClick={() => handlePlaceClick(place)}
