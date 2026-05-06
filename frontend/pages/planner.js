@@ -436,14 +436,7 @@ export default function Planner() {
                   );
                 })}
               </div>
-              <p className="text-sm text-gray-500 mb-2">Or enter custom preferences below (comma-separated)</p>
-              <input
-                {...register('preferences')}
-                type="text"
-                placeholder="e.g., Shopping, Museums, Parks"
-                disabled={!!selectedTheme}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors disabled:bg-gray-100"
-              />
+              </div>
             </div>
 
             <div>
@@ -485,16 +478,62 @@ export default function Planner() {
               {loading ? (
                 <>
                   <Loader className="animate-spin" size={20} />
-                  <span>Generating Your Itinerary...</span>
+                  <span>Planning...</span>
                 </>
               ) : (
                 <>
                   <Sparkles size={20} />
-                  <span>Generate Smart Itinerary</span>
+                  <span>Generate Full Itinerary</span>
                 </>
               )}
             </button>
           </form>
+
+          {/* Early Suggested Places Grid */}
+          {curatedPlaces && curatedPlaces.length > 0 && !itinerary && (
+            <div className="mt-8 space-y-6">
+              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 animate-fade-in">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-gradient-to-br from-purple-400 to-pink-600 p-3 rounded-xl">
+                      <Sparkles className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900">Suggested {selectedTheme ? themePreferences.find(t => t.id === selectedTheme)?.name : ''} Places</h2>
+                      <p className="text-gray-600">Handpicked for you in {watchedDestination || 'the area'}</p>
+                    </div>
+                  </div>
+                  <div className="bg-purple-100 px-4 py-2 rounded-full">
+                    <span className="text-purple-700 font-bold">{curatedPlaces.length} Places</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {curatedPlaces.map((place, index) => (
+                    <div 
+                      key={index} 
+                      onClick={() => handlePlaceClick(place)}
+                      className="group bg-white rounded-2xl overflow-hidden border-2 border-gray-100 transition-all duration-300 hover:shadow-2xl cursor-pointer"
+                    >
+                      <div className="relative h-48 sm:h-56 overflow-hidden">
+                        <img src={place.image} alt={place.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <div className="absolute top-3 left-3 bg-white/95 px-3 py-1.5 rounded-full shadow-lg">
+                          <span className="text-sm font-bold text-orange-600">{getPriceRange(place.priceLevel)}</span>
+                        </div>
+                      </div>
+                      <div className="p-5">
+                        <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-1">{place.name}</h3>
+                        <p className="text-xs text-gray-500 line-clamp-1 mb-3">{place.address}</p>
+                        <div className="flex gap-2">
+                          <button className="flex-1 py-2 bg-gray-100 rounded-lg text-xs font-bold hover:bg-orange-600 hover:text-white transition-all">Locate</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {loading && (
