@@ -29,13 +29,6 @@ Since they share the same domain under Vercel Services:
 In your `frontend/utils/api.js`, you can set `NEXT_PUBLIC_API_URL` to `/_/backend` in your Vercel environment variables.
 
 
-## 4. Connecting Frontend and Backend
-Once your backend is live on Render (e.g., `https://mnlxplore-backend.onrender.com`):
-
-1.  Go back to your **Vercel Project Settings**.
-2.  Go to **Environment Variables**.
-3.  Add/Update `NEXT_PUBLIC_API_URL` with your Render backend URL.
-4.  Redeploy the frontend to apply the changes.
 
 ## 5. Database (MongoDB Atlas)
 If you haven't already, set up a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) to get a production database URL for your `MONGODB_URI`.
