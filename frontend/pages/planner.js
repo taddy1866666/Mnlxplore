@@ -52,22 +52,25 @@ export default function Planner() {
     { id: 'transit', name: 'Transit', icon: '🚌', desc: 'LRT/MRT/Carousel' }
   ];
 
-  const calculateBudgetBreakdown = (budget, distanceKm = 0, mode = 'walking') => {
-    let transport = 0;
+  const calculateBudgetBreakdown = (budget, distanceKm = 0, mode = 'walking', days = 1) => {
+    let dailyTransport = 0;
     const GAS_PRICE = 70; // 2025 Metro Manila average
     
     if (mode === 'driving') {
-      // 10km/L efficiency
-      transport = Math.round((distanceKm / 10) * GAS_PRICE);
+      // Round trip gas (10km/L) + ₱150 daily parking
+      dailyTransport = ((distanceKm / 10) * GAS_PRICE * 2) + 150;
     } else if (mode === 'motorcycle') {
-      // 50km/L efficiency for scooters/commuter bikes
-      transport = Math.round((distanceKm / 50) * GAS_PRICE);
+      // Round trip gas (50km/L) + ₱150 daily parking
+      dailyTransport = ((distanceKm / 50) * GAS_PRICE * 2) + 150;
     } else if (mode === 'transit') {
-      // LRT-1/Carousel logic: ₱16.25 base + ₱1.47/km
-      transport = Math.max(15, Math.round(16.25 + (distanceKm * 1.47)));
+      // Round trip train/bus (₱16.25 base + ₱1.47/km) + ₱50 daily trikes/jeeps
+      const oneWay = Math.max(15, 16.25 + (distanceKm * 1.47));
+      dailyTransport = (oneWay * 2) + 50;
     } else if (mode === 'walking') {
-      transport = 0;
+      dailyTransport = 0;
     }
+
+    let transport = Math.round(dailyTransport * days);
 
     // Ensure transport doesn't exceed 50% of budget as a safety measure
     transport = Math.min(transport, budget * 0.5);
@@ -234,8 +237,8 @@ export default function Planner() {
         });
       }
 
-      // Update budget with accurate transport cost
-      setBudgetBreakdown(calculateBudgetBreakdown(tripInfo.budget, distanceKm, travelMode));
+      // Update budget with accurate transport cost (round trip + daily parking/extras)
+      setBudgetBreakdown(calculateBudgetBreakdown(tripInfo.budget, distanceKm, travelMode, tripInfo.days));
 
       const recsResponse = await apiClient.post(`/api/places/recommendations`, {
         destination: tripInfo.destination,
