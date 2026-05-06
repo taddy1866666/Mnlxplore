@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import apiClient from '../utils/api';
 import { Loader, Sparkles, MapPin, DollarSign, Calendar, Heart, Save, PieChart, UtensilsCrossed, Car, Ticket, Navigation, Clock, TrendingUp, Coffee, Utensils, Landmark, Mountain, Moon, Star, ExternalLink } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -7,7 +7,7 @@ import Footer from '../components/Footer';
 import { getCuratedPlaces } from '../utils/curatedPlaces';
 
 export default function Planner() {
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
   const [loading, setLoading] = useState(false);
   const [itinerary, setItinerary] = useState(null);
   const [error, setError] = useState('');
@@ -124,6 +124,32 @@ export default function Planner() {
     });
   };
 
+  // Automatically fetch curated places when destination or theme changes
+  const watchedDestination = watch('destination');
+  
+  useEffect(() => {
+    const fetchEarlySuggestions = async () => {
+      const dest = watchedDestination;
+      if (dest && dest.length > 3) {
+        try {
+          const response = await apiClient.post(`/api/places/curated`, {
+            destination: dest,
+            theme: selectedTheme
+          });
+          setCuratedPlaces(response.data.places);
+        } catch (err) {
+          console.error('Early fetch error:', err);
+        }
+      }
+    };
+    
+    const timer = setTimeout(() => {
+      fetchEarlySuggestions();
+    }, 1000); // Debounce search
+    
+    return () => clearTimeout(timer);
+  }, [watchedDestination, selectedTheme]);
+
   const calculateTravelInfo = async (destination) => {
     if (!userLocation) return;
 
@@ -199,18 +225,19 @@ export default function Planner() {
     };
 
     setTripData(tripInfo);
-    setBudgetBreakdown(calculateBudgetBreakdown(tripInfo.budget));
-
-    // Get curated places from API (Google Places)
-    try {
-      const curatedResponse = await apiClient.post(`/api/places/curated`, {
-        destination: tripInfo.destination,
-        theme: selectedTheme
-      });
-      setCuratedPlaces(curatedResponse.data.places);
-    } catch (err) {
-      console.error('Error fetching curated places:', err);
-      setCuratedPlaces([]);
+    setBudgetBreakdown(calculateBudgetBreakdown(tripInfo.budget, 0, travelMode, tripInfo.days));
+    
+    // Curated places are already being fetched by the effect or handled below
+    if (curatedPlaces.length === 0) {
+      try {
+        const curatedResponse = await apiClient.post(`/api/places/curated`, {
+          destination: tripInfo.destination,
+          theme: selectedTheme
+        });
+        setCuratedPlaces(curatedResponse.data.places);
+      } catch (err) {
+        console.error('Error fetching curated places:', err);
+      }
     }
 
     try {
@@ -483,6 +510,17 @@ export default function Planner() {
                 <div className="w-3 h-3 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Show Suggested Places early, even before full itinerary is generated */}
+        {curatedPlaces && curatedPlaces.length > 0 && !itinerary && (
+          <div className="mb-8">
+            <div className="flex items-center space-x-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg mb-4 inline-flex">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-bold">Trending Spots in {tripData?.destination || 'this area'}</span>
+            </div>
+            {/* The actual list will render below in the main results area */}
           </div>
         )}
 
