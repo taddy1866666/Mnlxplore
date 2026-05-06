@@ -86,26 +86,34 @@ export default function Planner() {
   };
 
   const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-          setLocationError('');
-        },
-        (error) => {
-          console.error('Geolocation error:', error);
-          setLocationError('Unable to get your location');
-          // Default to Manila if location fails
-          setUserLocation({ lat: 14.5995, lng: 120.9842 });
-        }
-      );
-    } else {
-      setLocationError('Geolocation not supported');
-      setUserLocation({ lat: 14.5995, lng: 120.9842 });
-    }
+    return new Promise((resolve, reject) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const loc = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            setUserLocation(loc);
+            setLocationError('');
+            resolve(loc);
+          },
+          (error) => {
+            console.error('Geolocation error:', error);
+            setLocationError('Unable to get your location');
+            const defaultLoc = { lat: 14.5995, lng: 120.9842 }; // Manila
+            setUserLocation(defaultLoc);
+            resolve(defaultLoc);
+          },
+          { timeout: 10000 }
+        );
+      } else {
+        setLocationError('Geolocation not supported');
+        const defaultLoc = { lat: 14.5995, lng: 120.9842 };
+        setUserLocation(defaultLoc);
+        resolve(defaultLoc);
+      }
+    });
   };
 
   const calculateTravelInfo = async (destination) => {
@@ -169,9 +177,9 @@ export default function Planner() {
     setRecommendations(null);
     setTravelInfo(null);
 
-    // Get user location first
-    if (!userLocation) {
-      getUserLocation();
+    let currentLoc = userLocation;
+    if (!currentLoc) {
+      currentLoc = await getUserLocation();
     }
 
     const tripInfo = {
@@ -199,15 +207,26 @@ export default function Planner() {
 
     try {
       // Calculate travel info from user location to destination
-      let distanceKm = 0;
-      if (userLocation) {
-        const distResponse = await apiClient.post(`/api/places/calculate-distance`, {
-          origin: `${userLocation.lat},${userLocation.lng}`,
-          destination: tripInfo.destination,
-          travelMode: travelMode
+      let distanceKm = 5; // Default fallback distance (5km)
+      
+      try {
+        if (currentLoc) {
+          const distResponse = await apiClient.post(`/api/places/calculate-distance`, {
+            origin: `${currentLoc.lat},${currentLoc.lng}`,
+            destination: tripInfo.destination,
+            travelMode: travelMode
+          });
+          setTravelInfo(distResponse.data);
+          distanceKm = (distResponse.data.distanceValue || 5000) / 1000;
+        }
+      } catch (distErr) {
+        console.error('Distance matrix error:', distErr);
+        // Fallback info if API fails
+        setTravelInfo({
+          distance: 'Estimated 5-10 km',
+          duration: 'Estimated 30 mins',
+          travelMode
         });
-        setTravelInfo(distResponse.data);
-        distanceKm = distResponse.data.distanceValue / 1000;
       }
 
       // Update budget with accurate transport cost
