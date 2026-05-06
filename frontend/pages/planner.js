@@ -134,13 +134,15 @@ export default function Planner() {
   useEffect(() => {
     const fetchEarlySuggestions = async () => {
       const dest = watchedDestination;
-      if (dest && dest.length > 3) {
+      if (dest && dest.length >= 3) {
         try {
           const response = await apiClient.post(`/api/places/curated`, {
             destination: dest,
             theme: selectedTheme
           });
-          setCuratedPlaces(response.data.places);
+          if (response.data && response.data.places) {
+            setCuratedPlaces(response.data.places);
+          }
         } catch (err) {
           console.error('Early fetch error:', err);
         }
