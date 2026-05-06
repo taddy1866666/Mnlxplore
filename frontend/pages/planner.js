@@ -1,12 +1,10 @@
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import axios from 'axios';
+import apiClient from '../utils/api';
 import { Loader, Sparkles, MapPin, DollarSign, Calendar, Heart, Save, PieChart, UtensilsCrossed, Car, Ticket, Navigation, Clock, TrendingUp, Coffee, Utensils, Landmark, Mountain, Moon, Star, ExternalLink } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { getCuratedPlaces } from '../utils/curatedPlaces';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Planner() {
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
@@ -87,7 +85,7 @@ export default function Planner() {
     if (!userLocation) return;
 
     try {
-      const response = await axios.post(`${API_URL}/api/places/calculate-distance`, {
+      const response = await apiClient.post(`/api/places/calculate-distance`, {
         origin: `${userLocation.lat},${userLocation.lng}`,
         destination: destination,
         travelMode: travelMode
@@ -114,7 +112,7 @@ export default function Planner() {
     if (!userLocation) return;
 
     try {
-      const response = await axios.post(`${API_URL}/api/places/calculate-distance`, {
+      const response = await apiClient.post(`/api/places/calculate-distance`, {
         origin: `${userLocation.lat},${userLocation.lng}`,
         destination: place.address || place.name,
         travelMode: travelMode
@@ -170,7 +168,7 @@ export default function Planner() {
         await calculateTravelInfo(tripInfo.destination);
       }
 
-      const recsResponse = await axios.post(`${API_URL}/api/places/recommendations`, {
+      const recsResponse = await apiClient.post(`/api/places/recommendations`, {
         destination: tripInfo.destination,
         preferences: tripInfo.preferences,
         budget: tripInfo.budget,
@@ -178,7 +176,7 @@ export default function Planner() {
       });
       setRecommendations(recsResponse.data);
 
-      const itineraryResponse = await axios.post(`${API_URL}/api/trip/generate`, tripInfo);
+      const itineraryResponse = await apiClient.post(`/api/trip/generate`, tripInfo);
       setItinerary(itineraryResponse.data.itinerary);
     } catch (err) {
       setError(err.response?.data?.message || 'Error generating itinerary');
@@ -197,10 +195,9 @@ export default function Planner() {
 
     setSaving(true);
     try {
-      await axios.post(
-        `${API_URL}/api/trips/save`,
-        { ...tripData, itinerary },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await apiClient.post(
+        `/api/trips/save`,
+        { ...tripData, itinerary }
       );
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);

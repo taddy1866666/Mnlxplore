@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import axios from 'axios';
+import apiClient from '../utils/api';
 import { Loader, Sparkles, MapPin, DollarSign, Calendar, Heart, Coffee, Utensils, Landmark, Mountain, Moon, Navigation, Star, Clock, TrendingUp } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function AdvancedPlanner() {
   const [loading, setLoading] = useState(false);
@@ -42,7 +40,7 @@ export default function AdvancedPlanner() {
     setRecommendations(null);
 
     try {
-      const response = await axios.post(`${API_URL}/api/places/recommendations`, {
+      const response = await apiClient.post(`/api/places/recommendations`, {
         destination,
         preferences: selectedTheme ? [selectedTheme] : ['tourist_attraction'],
         budget: parseFloat(budget),
@@ -68,7 +66,7 @@ export default function AdvancedPlanner() {
     setThemedPlan(null);
 
     try {
-      const response = await axios.post(`${API_URL}/api/places/themed-plan`, {
+      const response = await apiClient.post(`/api/places/themed-plan`, {
         destination,
         theme: selectedTheme,
         budget: parseFloat(budget),

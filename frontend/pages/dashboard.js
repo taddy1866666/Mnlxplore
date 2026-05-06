@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
+import apiClient from '../utils/api';
 import { Loader, Trash2, Calendar, DollarSign, MapPin as MapPinIcon, Eye } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Dashboard() {
   const [trips, setTrips] = useState([]);
@@ -24,9 +22,7 @@ export default function Dashboard() {
         return;
       }
 
-      const response = await axios.get(`${API_URL}/api/trips`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await apiClient.get(`/api/trips`);
 
       setTrips(response.data.trips || []);
     } catch (err) {
@@ -46,9 +42,7 @@ export default function Dashboard() {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${API_URL}/api/trips/${tripId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await apiClient.delete(`/api/trips/${tripId}`);
       setTrips(trips.filter(t => t._id !== tripId));
     } catch (err) {
       setError('Failed to delete trip');
