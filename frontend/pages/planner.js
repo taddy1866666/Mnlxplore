@@ -74,6 +74,17 @@ export default function Planner() {
     return { food, transport, activities };
   };
 
+  const getPriceRange = (level) => {
+    switch (level) {
+      case 0: return 'Free';
+      case 1: return '₱150 - ₱300';
+      case 2: return '₱400 - ₱800';
+      case 3: return '₱1,000 - ₱2,500';
+      case 4: return '₱3,000+';
+      default: return '₱300 - ₱600';
+    }
+  };
+
   const getUserLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -174,9 +185,17 @@ export default function Planner() {
     setTripData(tripInfo);
     setBudgetBreakdown(calculateBudgetBreakdown(tripInfo.budget));
 
-    // Get curated places
-    const curated = getCuratedPlaces(tripInfo.destination, selectedTheme);
-    setCuratedPlaces(curated);
+    // Get curated places from API (Google Places)
+    try {
+      const curatedResponse = await apiClient.post(`/api/places/curated`, {
+        destination: tripInfo.destination,
+        theme: selectedTheme
+      });
+      setCuratedPlaces(curatedResponse.data.places);
+    } catch (err) {
+      console.error('Error fetching curated places:', err);
+      setCuratedPlaces([]);
+    }
 
     try {
       // Calculate travel info from user location to destination
@@ -483,9 +502,9 @@ export default function Planner() {
                           <span className="text-sm font-bold text-gray-900">{place.rating || 'N/A'}</span>
                         </div>
                         
-                        {place.priceLevel > 0 && (
+                        {place.priceLevel >= 0 && (
                           <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
-                            <span className="text-sm font-bold text-orange-600">{'₱'.repeat(place.priceLevel)}</span>
+                            <span className="text-sm font-bold text-orange-600">{getPriceRange(place.priceLevel)}</span>
                           </div>
                         )}
                         

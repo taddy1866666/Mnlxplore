@@ -53,12 +53,19 @@ Preferences: ${sanitizedPreferences}
 
 Include:
 1. Daily schedule with specific attractions, restaurants, and activities
-2. Estimated costs for each activity
-3. Transportation recommendations
+2. Estimated costs for each activity (based on Philippine Peso)
+3. Transportation recommendations (Walking: ₱0, Driving: ~₱65/10km, Transit: ~₱13-30)
 4. Best time to visit each location
 5. Tips for travelers
+6. Total daily budget breakdown
 
-Format the response in a clear, day-by-day structure.`;
+Guidelines for costs:
+- Budget Meals: ₱150 - ₱300
+- Mid-range Meals: ₱400 - ₱800
+- Fine Dining: ₱1,500+
+- Most museums/parks: ₱50 - ₱300
+
+Format the response in a clear, day-by-day structure using Markdown.`;
 
     let itineraryText;
     
