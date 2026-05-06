@@ -436,14 +436,13 @@ export default function Planner() {
                   );
                 })}
               </div>
-              </div>
             </div>
 
-            <div>
-              <label className="flex items-center space-x-2 text-gray-700 font-semibold mb-3">
-                <Navigation className="w-5 h-5 text-indigo-600" />
-                <span>Travel Mode</span>
-              </label>
+              <div>
+                <label className="flex items-center space-x-2 text-gray-700 font-semibold mb-3">
+                  <Navigation className="w-5 h-5 text-indigo-600" />
+                  <span>Travel Mode</span>
+                </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {travelModes.map((mode) => (
                   <button
@@ -489,8 +488,8 @@ export default function Planner() {
             </button>
           </form>
 
-          {/* Early Suggested Places Grid */}
-          {curatedPlaces && curatedPlaces.length > 0 && !itinerary && (
+          {/* Suggested Places Grid (Always shows when data is available) */}
+          {curatedPlaces && curatedPlaces.length > 0 && (
             <div className="mt-8 space-y-6">
               <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 animate-fade-in">
                 <div className="flex items-center justify-between mb-6">
@@ -556,158 +555,11 @@ export default function Planner() {
           </div>
         )}
 
-        {/* Show Suggested Places early, even before full itinerary is generated */}
-        {curatedPlaces && curatedPlaces.length > 0 && !itinerary && (
-          <div className="mb-8">
-            <div className="flex items-center space-x-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg mb-4 inline-flex">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-bold">Trending Spots in {tripData?.destination || 'this area'}</span>
-            </div>
-            {/* The actual list will render below in the main results area */}
-          </div>
-        )}
 
         {itinerary && budgetBreakdown && (
           <div className="space-y-6">
             
-            {/* Curated Places with Images */}
-            {curatedPlaces && curatedPlaces.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 animate-fade-in">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-gradient-to-br from-purple-400 to-pink-600 p-3 rounded-xl">
-                      <Sparkles className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Suggested {selectedTheme ? themePreferences.find(t => t.id === selectedTheme)?.name : ''} Places</h2>
-                      <p className="text-gray-600">Discover the best spots in {tripData?.destination || 'the area'}</p>
-                    </div>
-                  </div>
-                  <div className="bg-purple-100 px-4 py-2 rounded-full">
-                    <span className="text-purple-700 font-bold">{curatedPlaces.length} Places</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {curatedPlaces.map((place, index) => (
-                    <div 
-                      key={index} 
-                      onClick={() => handlePlaceClick(place)}
-                      className={`group bg-white rounded-2xl overflow-hidden border-2 transition-all duration-300 hover:shadow-2xl cursor-pointer transform hover:-translate-y-1 ${
-                        selectedPlace?.placeId === place.placeId 
-                          ? 'border-orange-500 ring-4 ring-orange-100' 
-                          : 'border-gray-100 hover:border-orange-200'
-                      }`}
-                    >
-                      <div className="relative h-48 sm:h-56 overflow-hidden">
-                        <img 
-                          src={place.image} 
-                          alt={place.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                        
-                        {/* Status Badges */}
-                        <div className="absolute top-3 left-3 flex flex-col gap-2">
-                          <div className="bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
-                            <span className="text-sm font-bold text-orange-600">{getPriceRange(place.priceLevel)}</span>
-                          </div>
-                          {place.isGem ? (
-                            <div className="bg-purple-600/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
-                              <Sparkles className="w-3 h-3 text-white" />
-                              <span className="text-[10px] font-bold text-white uppercase tracking-wider">Hidden Gem</span>
-                            </div>
-                          ) : (
-                            <div className="bg-blue-600/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
-                              <TrendingUp className="w-3 h-3 text-white" />
-                              <span className="text-[10px] font-bold text-white uppercase tracking-wider">Popular</span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-lg shadow-lg flex items-center space-x-1">
-                          <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
-                          <span className="text-xs font-bold text-gray-900">{place.rating || 'N/A'}</span>
-                        </div>
-
-                        {place.isOpen !== undefined && (
-                          <div className={`absolute bottom-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold shadow-lg ${
-                            place.isOpen ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                          }`}>
-                            {place.isOpen ? 'OPEN' : 'CLOSED'}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="p-5">
-                        <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-1 group-hover:text-orange-600 transition-colors">{place.name}</h3>
-                        <div className="flex items-start space-x-1.5 text-xs text-gray-500 mb-3">
-                          <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                          <span className="line-clamp-1">{place.address}</span>
-                        </div>
-
-                        <p className="text-sm text-gray-600 mb-4 line-clamp-2 italic">"{place.description}"</p>
-
-                        {/* Location Details (Only when selected) */}
-                        {selectedPlace?.placeId === place.placeId && (
-                          <div className="mb-4 p-3 bg-orange-50 rounded-xl border border-orange-100 animate-in fade-in slide-in-from-top-2">
-                            {loadingPlaceInfo ? (
-                              <div className="flex items-center justify-center space-x-2 py-1">
-                                <Loader className="w-4 h-4 text-orange-600 animate-spin" />
-                                <span className="text-xs font-bold text-orange-700">Locating...</span>
-                              </div>
-                            ) : placeTravelInfo ? (
-                              <div className="grid grid-cols-2 gap-2">
-                                <div className="bg-white p-2 rounded-lg text-center shadow-sm">
-                                  <p className="text-[9px] text-gray-400 uppercase font-bold">Distance</p>
-                                  <p className="text-sm font-black text-blue-600">{placeTravelInfo.distance}</p>
-                                </div>
-                                <div className="bg-white p-2 rounded-lg text-center shadow-sm">
-                                  <p className="text-[9px] text-gray-400 uppercase font-bold">Arrival</p>
-                                  <p className="text-sm font-black text-green-600">{placeTravelInfo.arrivalTime}</p>
-                                </div>
-                              </div>
-                            ) : null}
-                          </div>
-                        )}
-
-                        <div className="flex gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handlePlaceClick(place);
-                            }}
-                            className={`flex-1 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center space-x-2 transition-all ${
-                              selectedPlace?.placeId === place.placeId
-                                ? 'bg-orange-600 text-white shadow-lg'
-                                : 'bg-gray-100 text-gray-700 hover:bg-orange-600 hover:text-white'
-                            }`}
-                          >
-                            <Navigation className="w-4 h-4" />
-                            <span>{selectedPlace?.placeId === place.placeId ? 'Located' : 'Locate'}</span>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`, '_blank');
-                            }}
-                            className="w-12 h-10 flex items-center justify-center bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 rounded-xl transition-colors"
-                            title="Open in Google Maps"
-                          >
-                            <ExternalLink className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 text-center">
-                  <p className="text-sm text-gray-500">
-                    Showing all {curatedPlaces.length} places (including highly-rated, popular, and hidden gems) • Sorted by rating
-                  </p>
-                </div>
-              </div>
-            )}
+            {/* Recommended Places */}
             {recommendations && recommendations.places && recommendations.places.length > 0 && (
               <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 animate-fade-in">
                 <div className="flex items-center space-x-3 mb-6">
