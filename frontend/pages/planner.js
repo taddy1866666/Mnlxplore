@@ -896,8 +896,8 @@ export default function Planner() {
                   allowFullScreen
                   referrerPolicy="no-referrer-when-downgrade"
                   src={selectedPlace 
-                    ? `https://www.google.com/maps/embed/v1/directions?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&origin=${userLocation ? `${userLocation.lat},${userLocation.lng}` : 'Manila,Philippines'}&destination=${encodeURIComponent(selectedPlace.address || selectedPlace.name)}&mode=${travelMode}`
-                    : `https://www.google.com/maps/embed/v1/directions?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&origin=${userLocation ? `${userLocation.lat},${userLocation.lng}` : 'Manila,Philippines'}&destination=${encodeURIComponent(tripData.destination + ', Metro Manila, Philippines')}&mode=${travelMode}`
+                    ? `https://www.google.com/maps/embed/v1/directions?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&origin=${userLocation ? `${userLocation.lat},${userLocation.lng}` : 'Manila,Philippines'}&destination=${encodeURIComponent(selectedPlace.address || selectedPlace.name)}&mode=${travelMode === 'motorcycle' ? 'driving' : travelMode}`
+                    : `https://www.google.com/maps/embed/v1/directions?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&origin=${userLocation ? `${userLocation.lat},${userLocation.lng}` : 'Manila,Philippines'}&destination=${encodeURIComponent(tripData.destination + ', Metro Manila, Philippines')}&mode=${travelMode === 'motorcycle' ? 'driving' : travelMode}`
                   }>
                 </iframe>
               </div>
@@ -905,8 +905,8 @@ export default function Planner() {
               <div className="mt-4 flex justify-center gap-3">
                 <a
                   href={selectedPlace
-                    ? `https://www.google.com/maps/dir/?api=1&origin=${userLocation ? `${userLocation.lat},${userLocation.lng}` : 'Manila,Philippines'}&destination=${encodeURIComponent(selectedPlace.address || selectedPlace.name)}&travelmode=${travelMode}`
-                    : `https://www.google.com/maps/dir/?api=1&origin=${userLocation ? `${userLocation.lat},${userLocation.lng}` : 'Manila,Philippines'}&destination=${encodeURIComponent(tripData.destination + ', Metro Manila, Philippines')}&travelmode=${travelMode}`
+                    ? `https://www.google.com/maps/dir/?api=1&origin=${userLocation ? `${userLocation.lat},${userLocation.lng}` : 'Manila,Philippines'}&destination=${encodeURIComponent(selectedPlace.address || selectedPlace.name)}&travelmode=${travelMode === 'motorcycle' ? 'driving' : travelMode}`
+                    : `https://www.google.com/maps/dir/?api=1&origin=${userLocation ? `${userLocation.lat},${userLocation.lng}` : 'Manila,Philippines'}&destination=${encodeURIComponent(tripData.destination + ', Metro Manila, Philippines')}&travelmode=${travelMode === 'motorcycle' ? 'driving' : travelMode}`
                   }
                   target="_blank"
                   rel="noopener noreferrer"
