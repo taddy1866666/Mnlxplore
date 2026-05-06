@@ -103,7 +103,8 @@ exports.getSmartRecommendations = async (req, res) => {
     const enrichedPlaces = await Promise.all(
       places.slice(0, 10).map(async (place) => {
         try {
-          const distanceUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${location.lat},${location.lng}&destinations=${place.geometry.location.lat},${place.geometry.location.lng}&mode=${travelMode}&key=${GOOGLE_MAPS_API_KEY}`;
+          const apiMode = travelMode === 'motorcycle' ? 'driving' : travelMode;
+          const distanceUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${location.lat},${location.lng}&destinations=${place.geometry.location.lat},${place.geometry.location.lng}&mode=${apiMode}&key=${GOOGLE_MAPS_API_KEY}`;
           const distanceResponse = await axios.get(distanceUrl);
           const element = distanceResponse.data.rows[0]?.elements[0];
 
@@ -313,7 +314,8 @@ exports.calculateDistance = async (req, res) => {
       ? destination 
       : `${destination}, Metro Manila, Philippines`;
 
-    const distanceUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(fullDestination)}&mode=${travelMode}&key=${GOOGLE_MAPS_API_KEY}`;
+    const apiMode = travelMode === 'motorcycle' ? 'driving' : travelMode;
+    const distanceUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(fullDestination)}&mode=${apiMode}&key=${GOOGLE_MAPS_API_KEY}`;
     
     const response = await axios.get(distanceUrl);
 
