@@ -231,7 +231,8 @@ exports.optimizeRoute = async (req, res) => {
     }
 
     const waypoints = destinations.slice(0, 8).join('|');
-    const directionsUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destinations[destinations.length - 1])}&waypoints=optimize:true|${waypoints}&mode=${travelMode}&key=${GOOGLE_MAPS_API_KEY}`;
+    const apiMode = travelMode === 'motorcycle' ? 'driving' : travelMode;
+    const directionsUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destinations[destinations.length - 1])}&waypoints=optimize:true|${waypoints}&mode=${apiMode}&key=${GOOGLE_MAPS_API_KEY}`;
 
     const response = await axios.get(directionsUrl);
 
