@@ -10,7 +10,10 @@ const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY || 'AIzaSyBFw0Qbyq9z
 // Smart Place Recommendations with AI
 exports.getSmartRecommendations = async (req, res) => {
   try {
-    const { destination, preferences, budget, travelMode = 'walking' } = req.body;
+    let { destination, preferences, budget, travelMode = 'walking' } = req.body;
+    
+    // Safety check for Google API
+    const apiMode = travelMode === 'motorcycle' ? 'driving' : travelMode;
 
     if (!destination) {
       return res.status(400).json({ message: 'Destination is required' });
@@ -103,7 +106,6 @@ exports.getSmartRecommendations = async (req, res) => {
     const enrichedPlaces = await Promise.all(
       places.slice(0, 10).map(async (place) => {
         try {
-          const apiMode = travelMode === 'motorcycle' ? 'driving' : travelMode;
           const distanceUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${location.lat},${location.lng}&destinations=${place.geometry.location.lat},${place.geometry.location.lng}&mode=${apiMode}&key=${GOOGLE_MAPS_API_KEY}`;
           const distanceResponse = await axios.get(distanceUrl);
           const element = distanceResponse.data.rows[0]?.elements[0];
@@ -304,7 +306,10 @@ exports.getPlaceDetails = async (req, res) => {
 // Calculate Distance from User Location to Destination
 exports.calculateDistance = async (req, res) => {
   try {
-    const { origin, destination, travelMode = 'walking' } = req.body;
+    let { origin, destination, travelMode = 'walking' } = req.body;
+    
+    // Safety check for Google API
+    const apiMode = travelMode === 'motorcycle' ? 'driving' : travelMode;
 
     if (!origin || !destination) {
       return res.status(400).json({ message: 'Origin and destination are required' });
@@ -315,7 +320,6 @@ exports.calculateDistance = async (req, res) => {
       ? destination 
       : `${destination}, Metro Manila, Philippines`;
 
-    const apiMode = travelMode === 'motorcycle' ? 'driving' : travelMode;
     const distanceUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(fullDestination)}&mode=${apiMode}&key=${GOOGLE_MAPS_API_KEY}`;
     
     const response = await axios.get(distanceUrl);

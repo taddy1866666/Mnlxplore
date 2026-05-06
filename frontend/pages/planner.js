@@ -131,7 +131,7 @@ export default function Planner() {
       const response = await apiClient.post(`/api/places/calculate-distance`, {
         origin: `${userLocation.lat},${userLocation.lng}`,
         destination: destination,
-        travelMode: travelMode
+        travelMode: travelMode === 'motorcycle' ? 'driving' : travelMode
       });
       setTravelInfo(response.data);
     } catch (err) {
@@ -158,7 +158,7 @@ export default function Planner() {
       const response = await apiClient.post(`/api/places/calculate-distance`, {
         origin: `${userLocation.lat},${userLocation.lng}`,
         destination: place.address || place.name,
-        travelMode: travelMode
+        travelMode: travelMode === 'motorcycle' ? 'driving' : travelMode
       });
       
       const now = new Date();
