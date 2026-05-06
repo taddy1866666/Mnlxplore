@@ -332,22 +332,24 @@ export default function Planner() {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10 border border-gray-100 mb-8">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div>
-              <label className="flex items-center space-x-2 text-gray-700 font-semibold mb-3">
-                <MapPin className="w-5 h-5 text-blue-600" />
-                <span>Destination</span>
-              </label>
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 mb-8 overflow-hidden">
+          <form onSubmit={handleSubmit(onSubmit)}>
+
+            {/* Step 1: Destination */}
+            <div className="p-8 border-b border-gray-100">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-sm">1</div>
+                <label className="text-lg font-bold text-gray-800">Where do you want to go?</label>
+              </div>
               <input
                 {...register('destination', { required: 'Destination is required' })}
                 type="text"
-                placeholder="e.g., BGC, Makati, Intramuros"
+                placeholder="e.g., BGC, Makati, Intramuros..."
                 onFocus={() => setShowSuggestions(true)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors text-lg"
               />
-              {errors.destination && <p className="text-red-500 text-sm mt-1">{errors.destination.message}</p>}
-              
+              {errors.destination && <p className="text-red-500 text-sm mt-2">{errors.destination.message}</p>}
+
               {showSuggestions && (
                 <div className="mt-3 grid grid-cols-2 md:grid-cols-3 gap-2">
                   {popularDestinations.map((dest) => (
@@ -357,13 +359,14 @@ export default function Planner() {
                       onClick={() => {
                         setValue('destination', dest.name);
                         setShowSuggestions(false);
+                        fetchSuggestions(dest.name, selectedTheme);
                       }}
-                      className="flex items-center space-x-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-all text-left"
+                      className="flex items-center space-x-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-200 transition-all text-left"
                     >
-                      <span className="text-2xl">{dest.icon}</span>
+                      <span className="text-xl">{dest.icon}</span>
                       <div>
                         <p className="text-sm font-semibold text-gray-900">{dest.name}</p>
-                        <p className="text-xs text-gray-600">{dest.desc}</p>
+                        <p className="text-xs text-gray-500">{dest.desc}</p>
                       </div>
                     </button>
                   ))}
@@ -371,50 +374,58 @@ export default function Planner() {
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="flex items-center space-x-2 text-gray-700 font-semibold mb-3">
-                  <DollarSign className="w-5 h-5 text-green-600" />
-                  <span>Budget (PHP)</span>
-                </label>
-                <input
-                  {...register('budget', { 
-                    required: 'Budget is required',
-                    min: { value: 100, message: 'Minimum budget is ₱100' },
-                    max: { value: 1000000, message: 'Maximum budget is ₱1,000,000' }
-                  })}
-                  type="number"
-                  placeholder="e.g., 5000"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
-                />
-                {errors.budget && <p className="text-red-500 text-sm mt-1">{errors.budget.message}</p>}
+            {/* Step 2: Budget + Days */}
+            <div className="p-8 border-b border-gray-100">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center font-black text-sm">2</div>
+                <label className="text-lg font-bold text-gray-800">Budget & Duration</label>
               </div>
-              
-              <div>
-                <label className="flex items-center space-x-2 text-gray-700 font-semibold mb-3">
-                  <Calendar className="w-5 h-5 text-purple-600" />
-                  <span>Number of Days</span>
-                </label>
-                <input
-                  {...register('dates', { 
-                    required: 'Number of days is required',
-                    min: { value: 1, message: 'Minimum 1 day' },
-                    max: { value: 30, message: 'Maximum 30 days' }
-                  })}
-                  type="number"
-                  placeholder="e.g., 3"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
-                />
-                {errors.dates && <p className="text-red-500 text-sm mt-1">{errors.dates.message}</p>}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="flex items-center space-x-2 text-gray-600 font-semibold mb-2 text-sm uppercase tracking-wide">
+                    <DollarSign className="w-4 h-4 text-green-600" />
+                    <span>Total Budget (PHP)</span>
+                  </label>
+                  <input
+                    {...register('budget', {
+                      required: 'Budget is required',
+                      min: { value: 100, message: 'Minimum budget is ₱100' },
+                      max: { value: 1000000, message: 'Maximum budget is ₱1,000,000' }
+                    })}
+                    type="number"
+                    placeholder="e.g., 5000"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 transition-colors"
+                  />
+                  {errors.budget && <p className="text-red-500 text-sm mt-1">{errors.budget.message}</p>}
+                </div>
+                <div>
+                  <label className="flex items-center space-x-2 text-gray-600 font-semibold mb-2 text-sm uppercase tracking-wide">
+                    <Calendar className="w-4 h-4 text-purple-600" />
+                    <span>Number of Days</span>
+                  </label>
+                  <input
+                    {...register('dates', {
+                      required: 'Number of days is required',
+                      min: { value: 1, message: 'Minimum 1 day' },
+                      max: { value: 30, message: 'Maximum 30 days' }
+                    })}
+                    type="number"
+                    placeholder="e.g., 3"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                  />
+                  {errors.dates && <p className="text-red-500 text-sm mt-1">{errors.dates.message}</p>}
+                </div>
               </div>
             </div>
 
-            <div>
-              <label className="flex items-center space-x-2 text-gray-700 font-semibold mb-3">
-                <Heart className="w-5 h-5 text-pink-600" />
-                <span>Travel Theme (Select One)</span>
-              </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+            {/* Step 3: Travel Theme */}
+            <div className="p-8 border-b border-gray-100">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-8 h-8 rounded-full bg-pink-600 text-white flex items-center justify-center font-black text-sm">3</div>
+                <label className="text-lg font-bold text-gray-800">Choose your Travel Theme</label>
+              </div>
+              <p className="text-sm text-gray-500 mb-4">Pick a theme and we'll instantly suggest nearby places that match!</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {themePreferences.map((theme) => {
                   const Icon = theme.icon;
                   return (
@@ -424,120 +435,210 @@ export default function Planner() {
                       onClick={() => {
                         const newTheme = theme.id === selectedTheme ? '' : theme.id;
                         setSelectedTheme(newTheme);
-                        // Immediately fetch suggestions with the new theme
                         fetchSuggestions(watchedDestination, newTheme);
                       }}
-                      className={`p-3 rounded-xl border-2 transition-all ${
+                      className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all text-left ${
                         selectedTheme === theme.id
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-purple-300'
+                          ? `border-transparent bg-gradient-to-r ${theme.color} text-white shadow-lg`
+                          : 'border-gray-200 hover:border-gray-300 bg-gray-50'
                       }`}
                     >
-                      <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${theme.color} flex items-center justify-center mx-auto mb-2`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        selectedTheme === theme.id ? 'bg-white/20' : `bg-gradient-to-r ${theme.color}`
+                      }`}>
                         <Icon className="w-5 h-5 text-white" />
                       </div>
-                      <div className="text-sm font-semibold text-gray-900">{theme.name}</div>
+                      <div>
+                        <div className={`text-sm font-bold ${selectedTheme === theme.id ? 'text-white' : 'text-gray-800'}`}>{theme.name}</div>
+                        {selectedTheme === theme.id && (
+                          <div className="text-[10px] text-white/80 font-medium">Selected ✓</div>
+                        )}
+                      </div>
                     </button>
                   );
                 })}
               </div>
+
+              {/* Inline Suggested Places (appears right after theme selection) */}
+              {curatedPlaces && curatedPlaces.length > 0 && selectedTheme && (
+                <div className="mt-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">
+                        Suggested {themePreferences.find(t => t.id === selectedTheme)?.name} Places
+                      </h3>
+                      <p className="text-sm text-gray-500">Near {watchedDestination} · {curatedPlaces.length} spots found</p>
+                    </div>
+                    <div className="bg-orange-100 px-3 py-1.5 rounded-full">
+                      <span className="text-orange-700 text-sm font-bold">{curatedPlaces.length} Places</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {curatedPlaces.map((place, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handlePlaceClick(place)}
+                        className={`group bg-white rounded-2xl overflow-hidden border-2 transition-all duration-300 hover:shadow-xl cursor-pointer ${
+                          selectedPlace?.placeId === place.placeId
+                            ? 'border-orange-500 ring-4 ring-orange-100'
+                            : 'border-gray-100 hover:border-orange-300'
+                        }`}
+                      >
+                        <div className="relative h-44 overflow-hidden">
+                          <img
+                            src={place.image}
+                            alt={place.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute top-2 left-2 flex flex-col gap-1.5">
+                            <div className="bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-full shadow text-xs font-bold text-orange-600">
+                              {getPriceRange(place.priceLevel)}
+                            </div>
+                            {place.isGem ? (
+                              <div className="bg-purple-600/90 backdrop-blur-sm px-2.5 py-1 rounded-full shadow flex items-center gap-1">
+                                <Sparkles className="w-3 h-3 text-white" />
+                                <span className="text-[9px] font-bold text-white uppercase">Hidden Gem</span>
+                              </div>
+                            ) : (
+                              <div className="bg-blue-600/90 backdrop-blur-sm px-2.5 py-1 rounded-full shadow flex items-center gap-1">
+                                <TrendingUp className="w-3 h-3 text-white" />
+                                <span className="text-[9px] font-bold text-white uppercase">Popular</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-lg shadow flex items-center space-x-1">
+                            <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                            <span className="text-xs font-bold text-gray-900">{place.rating || 'N/A'}</span>
+                          </div>
+                          {place.isOpen !== undefined && (
+                            <div className={`absolute bottom-2 right-2 px-2.5 py-1 rounded-full text-[9px] font-bold ${
+                              place.isOpen ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                            }`}>
+                              {place.isOpen ? 'OPEN' : 'CLOSED'}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="p-4">
+                          <h4 className="font-bold text-base text-gray-900 mb-1 line-clamp-1 group-hover:text-orange-600 transition-colors">{place.name}</h4>
+                          <div className="flex items-start space-x-1 text-xs text-gray-500 mb-3">
+                            <MapPin className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                            <span className="line-clamp-1">{place.address}</span>
+                          </div>
+
+                          {/* Locate Info */}
+                          {selectedPlace?.placeId === place.placeId && (
+                            <div className="mb-3 p-2.5 bg-orange-50 rounded-xl border border-orange-100">
+                              {loadingPlaceInfo ? (
+                                <div className="flex items-center justify-center space-x-2 py-1">
+                                  <Loader className="w-4 h-4 text-orange-600 animate-spin" />
+                                  <span className="text-xs font-bold text-orange-700">Locating...</span>
+                                </div>
+                              ) : placeTravelInfo ? (
+                                <div className="grid grid-cols-2 gap-2 text-center">
+                                  <div>
+                                    <p className="text-[9px] text-gray-400 uppercase font-bold">Distance</p>
+                                    <p className="text-sm font-black text-blue-600">{placeTravelInfo.distance}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-[9px] text-gray-400 uppercase font-bold">ETA</p>
+                                    <p className="text-sm font-black text-green-600">{placeTravelInfo.arrivalTime}</p>
+                                  </div>
+                                </div>
+                              ) : null}
+                            </div>
+                          )}
+
+                          <div className="flex gap-2">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handlePlaceClick(place); }}
+                              className={`flex-1 py-2 rounded-lg font-bold text-xs flex items-center justify-center space-x-1.5 transition-all ${
+                                selectedPlace?.placeId === place.placeId
+                                  ? 'bg-orange-600 text-white'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-orange-600 hover:text-white'
+                              }`}
+                            >
+                              <Navigation className="w-3.5 h-3.5" />
+                              <span>{selectedPlace?.placeId === place.placeId ? 'Located' : 'Locate'}</span>
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`, '_blank');
+                              }}
+                              className="w-10 h-8 flex items-center justify-center bg-gray-100 hover:bg-blue-50 text-gray-500 hover:text-blue-600 rounded-lg transition-colors"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Loading state for suggestions */}
+              {selectedTheme && watchedDestination && curatedPlaces.length === 0 && (
+                <div className="mt-6 flex items-center justify-center space-x-3 py-6 text-gray-400">
+                  <Loader className="w-5 h-5 animate-spin" />
+                  <span className="text-sm font-medium">Finding nearby {themePreferences.find(t => t.id === selectedTheme)?.name} places...</span>
+                </div>
+              )}
             </div>
 
-              <div>
-                <label className="flex items-center space-x-2 text-gray-700 font-semibold mb-3">
-                  <Navigation className="w-5 h-5 text-indigo-600" />
-                  <span>Travel Mode</span>
-                </label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Step 4: Travel Mode + Generate */}
+            <div className="p-8">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-black text-sm">4</div>
+                <label className="text-lg font-bold text-gray-800">Travel Mode</label>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 {travelModes.map((mode) => (
                   <button
                     key={mode.id}
                     type="button"
                     onClick={() => setTravelMode(mode.id)}
-                    className={`p-4 rounded-xl border-2 transition-all ${
+                    className={`p-4 rounded-xl border-2 transition-all text-center ${
                       travelMode === mode.id
                         ? 'border-indigo-500 bg-indigo-50'
                         : 'border-gray-200 hover:border-indigo-300'
                     }`}
                   >
-                    <div className="text-3xl mb-2">{mode.icon}</div>
+                    <div className="text-3xl mb-1">{mode.icon}</div>
                     <div className="font-semibold text-gray-900 text-sm">{mode.name}</div>
                     <div className="text-xs text-gray-500">{mode.desc}</div>
                   </button>
                 ))}
               </div>
-            </div>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-4 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg flex items-center justify-center space-x-2"
-            >
-              {loading ? (
-                <>
-                  <Loader className="animate-spin" size={20} />
-                  <span>Planning...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles size={20} />
-                  <span>Generate Full Itinerary</span>
-                </>
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4">
+                  {error}
+                </div>
               )}
-            </button>
-          </form>
 
-          {/* Suggested Places Grid (Always shows when data is available) */}
-          {curatedPlaces && curatedPlaces.length > 0 && (
-            <div className="mt-8 space-y-6">
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 animate-fade-in">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-gradient-to-br from-purple-400 to-pink-600 p-3 rounded-xl">
-                      <Sparkles className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Suggested {selectedTheme ? themePreferences.find(t => t.id === selectedTheme)?.name : ''} Places</h2>
-                      <p className="text-gray-600">Handpicked for you in {watchedDestination || 'the area'}</p>
-                    </div>
-                  </div>
-                  <div className="bg-purple-100 px-4 py-2 rounded-full">
-                    <span className="text-purple-700 font-bold">{curatedPlaces.length} Places</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {curatedPlaces.map((place, index) => (
-                    <div 
-                      key={index} 
-                      onClick={() => handlePlaceClick(place)}
-                      className="group bg-white rounded-2xl overflow-hidden border-2 border-gray-100 transition-all duration-300 hover:shadow-2xl cursor-pointer"
-                    >
-                      <div className="relative h-48 sm:h-56 overflow-hidden">
-                        <img src={place.image} alt={place.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        <div className="absolute top-3 left-3 bg-white/95 px-3 py-1.5 rounded-full shadow-lg">
-                          <span className="text-sm font-bold text-orange-600">{getPriceRange(place.priceLevel)}</span>
-                        </div>
-                      </div>
-                      <div className="p-5">
-                        <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-1">{place.name}</h3>
-                        <p className="text-xs text-gray-500 line-clamp-1 mb-3">{place.address}</p>
-                        <div className="flex gap-2">
-                          <button className="flex-1 py-2 bg-gray-100 rounded-lg text-xs font-bold hover:bg-orange-600 hover:text-white transition-all">Locate</button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-black py-4 rounded-xl text-lg uppercase tracking-widest shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center space-x-3"
+              >
+                {loading ? (
+                  <>
+                    <Loader className="animate-spin w-5 h-5" />
+                    <span>Planning...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5" />
+                    <span>Generate Full Itinerary</span>
+                  </>
+                )}
+              </button>
             </div>
-          )}
+
+          </form>
         </div>
 
         {loading && (
