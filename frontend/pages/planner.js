@@ -46,20 +46,25 @@ export default function Planner() {
   ];
 
   const travelModes = [
-    { id: 'walking', name: 'Walking', icon: '🚶', desc: 'Best for nearby' },
-    { id: 'driving', name: 'Driving', icon: '🚗', desc: 'Fastest option' },
-    { id: 'transit', name: 'Transit', icon: '🚌', desc: 'Public transport' }
+    { id: 'walking', name: 'Walking', icon: '🚶', desc: 'Best for nearby (₱0)' },
+    { id: 'motorcycle', name: 'Motorcycle', icon: '🛵', desc: 'Fast & Cheap (~50km/L)' },
+    { id: 'driving', name: 'Driving', icon: '🚗', desc: 'Fastest (~10km/L)' },
+    { id: 'transit', name: 'Transit', icon: '🚌', desc: 'LRT/MRT/Carousel' }
   ];
 
   const calculateBudgetBreakdown = (budget, distanceKm = 0, mode = 'walking') => {
     let transport = 0;
+    const GAS_PRICE = 70; // 2025 Metro Manila average
     
     if (mode === 'driving') {
-      // Estimated gas cost: 10km/L at ₱65/L
-      transport = Math.round((distanceKm / 10) * 65);
+      // 10km/L efficiency
+      transport = Math.round((distanceKm / 10) * GAS_PRICE);
+    } else if (mode === 'motorcycle') {
+      // 50km/L efficiency for scooters/commuter bikes
+      transport = Math.round((distanceKm / 50) * GAS_PRICE);
     } else if (mode === 'transit') {
-      // Estimated fare: ₱13 base (4km) + ₱2 per km after
-      transport = distanceKm <= 4 ? 13 : Math.round(13 + (distanceKm - 4) * 2);
+      // LRT-1/Carousel logic: ₱16.25 base + ₱1.47/km
+      transport = Math.max(15, Math.round(16.25 + (distanceKm * 1.47)));
     } else if (mode === 'walking') {
       transport = 0;
     }
@@ -409,7 +414,7 @@ export default function Planner() {
                 <Navigation className="w-5 h-5 text-indigo-600" />
                 <span>Travel Mode</span>
               </label>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {travelModes.map((mode) => (
                   <button
                     key={mode.id}

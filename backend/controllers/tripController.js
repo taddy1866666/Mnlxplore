@@ -54,7 +54,7 @@ Preferences: ${sanitizedPreferences}
 Include:
 1. Daily schedule with specific attractions, restaurants, and activities
 2. Estimated costs for each activity (based on Philippine Peso)
-3. Transportation recommendations (Walking: ₱0, Driving: ~₱65/10km, Transit: ~₱13-30)
+3. Transportation recommendations (Walking: ₱0, Motorcycle: ~₱70/50km, Driving: ~₱70/10km, Transit: ₱16.25 base + ₱1.47/km)
 4. Best time to visit each location
 5. Tips for travelers
 6. Total daily budget breakdown
