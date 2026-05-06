@@ -58,7 +58,8 @@ Preferences: ${sanitizedPreferences}
 Travel Mode: ${travelMode || 'walking'}${placesContext}
 
 Include:
-1. Daily schedule using the recommended places listed above
+1. A structured daily schedule that EXCLUSIVELY uses and incorporates ALL the recommended places provided above:
+${suggestedPlaces.map(p => `   - ${p.name} (Priority Venue)`).join('\n')}
 2. Estimated costs for each activity (based on Philippine Peso)
 3. Transportation recommendations (Walking: ₱0, Motorcycle: ~₱70/50km, Driving: ~₱70/10km, Transit: ₱16.25 base + ₱1.47/km)
 4. Best time to visit each location
@@ -93,35 +94,39 @@ Format the response in a clear, day-by-day structure using Markdown.`;
       console.error('OpenAI API Error:', aiError.message);
       
       // Fallback: Generate a basic itinerary
+      // Fallback: Generate an itinerary based on provided places
+      const daysArray = Array.from({ length: parsedDays }, (_, i) => i + 1);
+      const placesPerDay = Math.ceil(suggestedPlaces.length / parsedDays);
+      
       itineraryText = `# ${parsedDays}-Day Itinerary for ${sanitizedDestination}
+(Note: AI Service unavailable, generating template based on suggested spots)
 
 Budget: ₱${parsedBudget.toLocaleString()}
 Preferences: ${sanitizedPreferences}
 
-${Array.from({ length: parsedDays }, (_, i) => `
-## Day ${i + 1}
-
-**Morning (8:00 AM - 12:00 PM)**
-- Visit local attractions in ${sanitizedDestination}
-- Estimated cost: ₱${Math.round(parsedBudget / parsedDays / 3)}
-
-**Afternoon (1:00 PM - 5:00 PM)**
-- Explore nearby restaurants and cafes
-- Try local cuisine
-- Estimated cost: ₱${Math.round(parsedBudget / parsedDays / 3)}
-
-**Evening (6:00 PM - 10:00 PM)**
-- Evening activities and entertainment
-- Estimated cost: ₱${Math.round(parsedBudget / parsedDays / 3)}
-`).join('')}
+${daysArray.map(day => {
+  const dayPlaces = suggestedPlaces.slice((day - 1) * placesPerDay, day * placesPerDay);
+  return `
+## Day ${day}
+${dayPlaces.length > 0 ? dayPlaces.map((p, idx) => `
+**${idx === 0 ? 'Morning' : idx === 1 ? 'Afternoon' : 'Evening'} Activity**
+- Visit **${p.name}**
+- Location: ${p.address}
+- Description: ${p.description || 'Popular local spot'}
+- Estimated cost: ₱${Math.round(parsedBudget / (parsedDays * 3))}
+`).join('') : `
+**Explore ${sanitizedDestination}**
+- Visit local spots and enjoy the atmosphere
+- Estimated cost: ₱${Math.round(parsedBudget / (parsedDays * 3))}
+`}
+`;}).join('')}
 
 **Transportation Tips:**
-- Use ride-sharing apps or public transport
-- Budget for daily transport: ₱200-500
+- Mode: ${travelMode || 'Walking'}
+- Daily budget for transport: ₱${Math.round((parsedBudget * 0.15) / parsedDays)}
 
 **Important Notes:**
-- This is a basic itinerary template
-- For AI-powered personalized recommendations, please check your OpenAI API configuration
+- This itinerary is built using your curated places: ${suggestedPlaces.map(p => p.name).join(', ')}
 - Adjust activities based on your interests: ${sanitizedPreferences}`;
     }
 

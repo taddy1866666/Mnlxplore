@@ -366,19 +366,22 @@ exports.getCuratedPlaces = async (req, res) => {
         { name: 'The Mind Museum', address: 'JY Campos Park, BGC', rating: 4.6, priceLevel: 3, image: 'https://images.unsplash.com/photo-1565967511849-76a60a516170?w=500', theme: ['cultural'], location: { lat: 14.5519, lng: 121.0458 } },
         { name: 'Wildflour Cafe + Bakery', address: 'Net Lima, BGC', rating: 4.5, priceLevel: 3, image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500', theme: ['cafe', 'food'], location: { lat: 14.5492, lng: 121.0451 } },
         { name: 'Venice Grand Canal Mall', address: 'McKinley Hill, Taguig', rating: 4.7, priceLevel: 2, image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500', theme: ['romantic', 'shopping'], location: { lat: 14.5350, lng: 121.0361 } },
-        { name: 'Uptown Mall', address: '9th Ave, BGC', rating: 4.6, priceLevel: 3, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500', theme: ['shopping', 'food', 'nightlife'], location: { lat: 14.5562, lng: 121.0547 } }
+        { name: 'Uptown Mall', address: '9th Ave, BGC', rating: 4.6, priceLevel: 3, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500', theme: ['shopping', 'food', 'nightlife'], location: { lat: 14.5562, lng: 121.0547 } },
+        { name: 'SM Aura Premier', address: 'McKinley Pkwy, BGC', rating: 4.6, priceLevel: 3, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500', theme: ['shopping', 'food'], location: { lat: 14.5476, lng: 121.0543 } }
       ],
       'makati': [
         { name: 'Ayala Triangle Gardens', address: 'Paseo de Roxas, Makati', rating: 4.7, priceLevel: 0, image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=500', theme: ['romantic', 'cultural'], location: { lat: 14.5571, lng: 121.0231 } },
         { name: 'Greenbelt Mall', address: 'Ayala Center, Makati', rating: 4.6, priceLevel: 3, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500', theme: ['shopping', 'food'], location: { lat: 14.5535, lng: 121.0211 } },
-        { name: 'Poblacion Nightlife', address: 'Poblacion, Makati', rating: 4.4, priceLevel: 2, image: 'https://images.unsplash.com/photo-1514525253361-bee1d9d4d5d3?w=500', theme: ['nightlife', 'food'], location: { lat: 14.5673, lng: 121.0309 } },
-        { name: 'Salcedo Village', address: 'Makati City', rating: 4.5, priceLevel: 2, image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=500', theme: ['cafe', 'food'], location: { lat: 14.5615, lng: 121.0244 } }
+        { name: 'SM Makati', address: 'Ayala Center, Makati', rating: 4.5, priceLevel: 2, image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500', theme: ['shopping', 'food'], location: { lat: 14.5511, lng: 121.0251 } },
+        { name: 'Glorietta Mall', address: 'Ayala Center, Makati', rating: 4.5, priceLevel: 2, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500', theme: ['shopping', 'food'], location: { lat: 14.5518, lng: 121.0253 } },
+        { name: 'Puregold Makati', address: 'J.P. Rizal St, Makati', rating: 4.2, priceLevel: 1, image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500', theme: ['shopping'], location: { lat: 14.5721, lng: 121.0211 } }
       ],
       'intramuros': [
+        { name: 'SM Mall of Asia', address: 'Seaside Blvd, Pasay', rating: 4.8, priceLevel: 2, image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500', theme: ['shopping', 'food', 'romantic'], location: { lat: 14.5351, lng: 120.9822 } },
         { name: 'Fort Santiago', address: 'Intramuros, Manila', rating: 4.8, priceLevel: 1, image: 'https://images.unsplash.com/photo-1555993539-1732b0258235?w=500', theme: ['cultural'], location: { lat: 14.5940, lng: 120.9702 } },
         { name: 'San Agustin Church', address: 'General Luna St, Intramuros', rating: 4.7, priceLevel: 0, image: 'https://images.unsplash.com/photo-1565967511849-76a60a516170?w=500', theme: ['cultural'], location: { lat: 14.5891, lng: 120.9752 } },
-        { name: 'La Cathedral Cafe', address: 'Beaterio St, Intramuros', rating: 4.5, priceLevel: 2, image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500', theme: ['romantic', 'cafe'], location: { lat: 14.5916, lng: 120.9734 } },
-        { name: 'Barbara\'s Heritage Restaurant', address: 'Plaza San Luis Complex, Intramuros', rating: 4.6, priceLevel: 3, image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500', theme: ['cultural', 'food', 'romantic'], location: { lat: 14.5888, lng: 120.9752 } }
+        { name: 'Puregold Manila', address: 'San Marcelino St, Manila', rating: 4.2, priceLevel: 1, image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500', theme: ['shopping'], location: { lat: 14.5851, lng: 120.9881 } },
+        { name: 'Vista Mall (AllMall)', address: 'Global South, Las Piñas', rating: 4.4, priceLevel: 2, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500', theme: ['shopping', 'food'], location: { lat: 14.4751, lng: 120.9811 } }
       ]
     };
 
