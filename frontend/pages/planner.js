@@ -26,6 +26,7 @@ export default function Planner() {
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [placeTravelInfo, setPlaceTravelInfo] = useState(null);
   const [loadingPlaceInfo, setLoadingPlaceInfo] = useState(false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   const popularDestinations = [
     { name: 'BGC, Taguig', icon: '🏙️', desc: 'Modern business district' },
@@ -133,6 +134,8 @@ export default function Planner() {
   // Standalone fetch function - can be called directly from theme click or via useEffect
   const fetchSuggestions = async (dest, theme) => {
     if (!dest || dest.length < 3) return;
+    setLoadingSuggestions(true);
+    setCuratedPlaces([]);
     try {
       const response = await apiClient.post(`/api/places/curated`, {
         destination: dest,
@@ -143,6 +146,8 @@ export default function Planner() {
       }
     } catch (err) {
       console.error('Suggestion fetch error:', err);
+    } finally {
+      setLoadingSuggestions(false);
     }
   };
 
@@ -580,7 +585,7 @@ export default function Planner() {
               )}
 
               {/* Loading state for suggestions */}
-              {selectedTheme && watchedDestination && curatedPlaces.length === 0 && (
+              {loadingSuggestions && selectedTheme && (
                 <div className="mt-6 flex items-center justify-center space-x-3 py-6 text-gray-400">
                   <Loader className="w-5 h-5 animate-spin" />
                   <span className="text-sm font-medium">Finding nearby {themePreferences.find(t => t.id === selectedTheme)?.name} places...</span>

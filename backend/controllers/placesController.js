@@ -382,28 +382,27 @@ exports.getCuratedPlaces = async (req, res) => {
 
     const location = geocodeResponse.data.results[0].geometry.location;
 
-    // Map themes to place types - EXPANDED
+    // Map themes to place types - limit to 2 types max for speed
     const themeTypeMap = {
-      'romantic': ['restaurant', 'park', 'cafe', 'bar', 'tourist_attraction', 'movie_theater'],
-      'food': ['restaurant', 'cafe', 'bakery', 'meal_takeaway', 'meal_delivery', 'market'],
-      'cafe': ['cafe', 'bakery', 'coffee_shop'],
-      'cultural': ['museum', 'art_gallery', 'church', 'tourist_attraction', 'library', 'heritage_site'],
-      'shopping': ['shopping_mall', 'department_store', 'clothing_store', 'store', 'market'],
-      'nightlife': ['night_club', 'bar', 'casino', 'pub', 'lounge']
+      'romantic': ['restaurant', 'park'],
+      'food': ['restaurant', 'cafe'],
+      'cafe': ['cafe', 'bakery'],
+      'cultural': ['museum', 'tourist_attraction'],
+      'shopping': ['shopping_mall', 'department_store'],
+      'nightlife': ['night_club', 'bar']
     };
 
-    const types = themeTypeMap[theme] || ['tourist_attraction', 'restaurant', 'cafe'];
+    const types = (themeTypeMap[theme] || ['tourist_attraction', 'restaurant']).slice(0, 2);
 
-    // Fetch ALL places for each type - NO LIMITS
+    // Fetch places for each type - NO pagination, NO per-place detail calls
     const allPlaces = [];
     const seenPlaceIds = new Set();
 
-    for (const type of types) {
+    await Promise.all(types.map(async (type) => {
       try {
-        // First request
-        let placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.lat},${location.lng}&radius=5000&type=${type}&key=${GOOGLE_MAPS_API_KEY}`;
-        let placesResponse = await axios.get(placesUrl);
-        
+        const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.lat},${location.lng}&radius=5000&type=${type}&key=${GOOGLE_MAPS_API_KEY}`;
+        const placesResponse = await axios.get(placesUrl);
+
         if (placesResponse.data.results) {
           placesResponse.data.results.forEach(place => {
             if (!seenPlaceIds.has(place.place_id)) {
@@ -411,97 +410,49 @@ exports.getCuratedPlaces = async (req, res) => {
               allPlaces.push(place);
             }
           });
-
-          // Get next page if available
-          let nextPageToken = placesResponse.data.next_page_token;
-          let attempts = 0;
-          
-          while (nextPageToken && attempts < 2) {
-            // Wait 2 seconds before next page request (Google requirement)
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            const nextUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken=${nextPageToken}&key=${GOOGLE_MAPS_API_KEY}`;
-            const nextResponse = await axios.get(nextUrl);
-            
-            if (nextResponse.data.results) {
-              nextResponse.data.results.forEach(place => {
-                if (!seenPlaceIds.has(place.place_id)) {
-                  seenPlaceIds.add(place.place_id);
-                  allPlaces.push(place);
-                }
-              });
-            }
-            
-            nextPageToken = nextResponse.data.next_page_token;
-            attempts++;
-          }
         }
       } catch (err) {
         console.error(`Error fetching ${type}:`, err.message);
       }
-    }
+    }));
 
     // Balance "Sikat" (Popular) and "Hidden Gems"
     const popularPlaces = allPlaces
       .filter(p => (p.user_ratings_total || 0) >= 200 && (p.rating || 0) >= 4.0)
       .sort((a, b) => (b.user_ratings_total || 0) - (a.user_ratings_total || 0))
-      .slice(0, 10);
+      .slice(0, 8);
 
     const hiddenGems = allPlaces
       .filter(p => (p.user_ratings_total || 0) < 200 && (p.user_ratings_total || 0) > 5 && (p.rating || 0) >= 4.2)
       .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-      .slice(0, 10);
+      .slice(0, 6);
 
-    // Combine them to show a variety
     const topPlaces = [...popularPlaces, ...hiddenGems];
 
-    // Enrich with REAL photos from Google
-    const enrichedPlaces = await Promise.all(
-      topPlaces.map(async (place) => {
-        let photoUrl = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500';
-        
-        // Get REAL photo from Google Places
-        if (place.photos && place.photos[0]) {
-          const photoReference = place.photos[0].photo_reference;
-          photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=${photoReference}&key=${GOOGLE_MAPS_API_KEY}`;
-        }
+    // Build enriched places WITHOUT extra API calls - use data already in search results
+    const enrichedPlaces = topPlaces.map((place) => {
+      let photoUrl = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500';
 
-        // Get place details for more info
-        let description = '';
-        let website = '';
-        let phone = '';
-        
-        try {
-          const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=editorial_summary,website,formatted_phone_number,opening_hours&key=${GOOGLE_MAPS_API_KEY}`;
-          const detailsResponse = await axios.get(detailsUrl);
-          
-          if (detailsResponse.data.result) {
-            description = detailsResponse.data.result.editorial_summary?.overview || '';
-            website = detailsResponse.data.result.website || '';
-            phone = detailsResponse.data.result.formatted_phone_number || '';
-          }
-        } catch (err) {
-          console.error('Error fetching place details:', err.message);
-        }
+      if (place.photos && place.photos[0]) {
+        const photoReference = place.photos[0].photo_reference;
+        photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=${photoReference}&key=${GOOGLE_MAPS_API_KEY}`;
+      }
 
-        return {
-          name: place.name,
-          address: place.vicinity,
-          rating: place.rating,
-          priceLevel: place.price_level || 0,
-          image: photoUrl,
-          location: place.geometry.location,
-          placeId: place.place_id,
-          types: place.types,
-          userRatingsTotal: place.user_ratings_total,
-          isGem: (place.user_ratings_total || 0) < 200,
-          description: description || `Popular ${place.types[0].replace('_', ' ')} in ${destination}`,
-          website: website,
-          phone: phone,
-          isOpen: place.opening_hours?.open_now
-        };
-      })
-    );
+      return {
+        name: place.name,
+        address: place.vicinity,
+        rating: place.rating,
+        priceLevel: place.price_level || 0,
+        image: photoUrl,
+        location: place.geometry.location,
+        placeId: place.place_id,
+        types: place.types,
+        userRatingsTotal: place.user_ratings_total,
+        isGem: (place.user_ratings_total || 0) < 200,
+        description: `Popular ${(place.types[0] || 'spot').replace(/_/g, ' ')} in ${destination}`,
+        isOpen: place.opening_hours?.open_now
+      };
+    });
 
     res.status(200).json({
       message: 'Curated places retrieved successfully',
