@@ -153,11 +153,13 @@ export default function Planner() {
 
   // Debounced fetch when destination changes (user typing)
   useEffect(() => {
+    if (!watchedDestination || watchedDestination.length < 3) return;
     const timer = setTimeout(() => {
       fetchSuggestions(watchedDestination, selectedTheme);
     }, 800);
     return () => clearTimeout(timer);
   }, [watchedDestination]);
+
 
   const calculateTravelInfo = async (destination) => {
     if (!userLocation) return;
@@ -464,13 +466,14 @@ export default function Planner() {
                 })}
               </div>
 
-              {/* Inline Suggested Places (appears right after theme selection) */}
-              {curatedPlaces && curatedPlaces.length > 0 && selectedTheme && (
+              {/* Inline Suggested Places - shows as soon as destination typed OR theme selected */}
+              {(curatedPlaces && curatedPlaces.length > 0) && (
+
                 <div className="mt-8">
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-xl font-bold text-gray-900">
-                        Suggested {themePreferences.find(t => t.id === selectedTheme)?.name} Places
+                        {selectedTheme ? `Suggested ${themePreferences.find(t => t.id === selectedTheme)?.name} Places` : 'Nearby Places'}
                       </h3>
                       <p className="text-sm text-gray-500">Near {watchedDestination} · {curatedPlaces.length} spots found</p>
                     </div>
