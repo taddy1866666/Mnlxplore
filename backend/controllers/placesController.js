@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { OpenAI } = require('openai');
+const { dynamicCache } = require('../utils/cache');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -11,6 +12,15 @@ const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY || 'AIzaSyBFw0Qbyq9z
 exports.getSmartRecommendations = async (req, res) => {
   try {
     let { destination, preferences, budget, travelMode = 'walking' } = req.body;
+
+    // Generate cache key
+    const cacheKey = `places_${destination}_${JSON.stringify(preferences)}_${budget}_${travelMode}`;
+    const cachedResult = dynamicCache.get(cacheKey);
+    
+    if (cachedResult) {
+      console.log(`[Cache] Hit for places in ${destination}`);
+      return res.status(200).json(cachedResult);
+    }
     
     // Safety check for Google API
     const apiMode = travelMode === 'motorcycle' ? 'driving' : travelMode;
@@ -172,14 +182,19 @@ exports.getSmartRecommendations = async (req, res) => {
       (a.distanceValue || 999999) - (b.distanceValue || 999999)
     );
 
-    res.status(200).json({
+    const responseData = {
       message: 'Recommendations retrieved successfully',
       destination: geocodeResponse.data.results[0].formatted_address,
       centerLocation: location,
       places: sorted,
       count: sorted.length,
       travelMode
-    });
+    };
+
+    // Save to cache
+    dynamicCache.set(cacheKey, responseData);
+
+    res.status(200).json(responseData);
   } catch (error) {
     console.error('Error getting recommendations:', error.message);
     res.status(500).json({ 
@@ -456,26 +471,26 @@ exports.getCuratedPlaces = async (req, res) => {
     // --- Step 1: Static Fallback Database (Guarantees suggestions work even if API fails) ---
     const staticPlaces = {
       'bgc': [
-        { name: 'Bonifacio High Street', address: 'BGC, Taguig', rating: 4.8, priceLevel: 2, image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500', theme: ['shopping', 'food', 'romantic'], location: { lat: 14.5511, lng: 121.0515 } },
-        { name: 'The Mind Museum', address: 'JY Campos Park, BGC', rating: 4.6, priceLevel: 3, image: 'https://images.unsplash.com/photo-1565967511849-76a60a516170?w=500', theme: ['cultural'], location: { lat: 14.5519, lng: 121.0458 } },
-        { name: 'Wildflour Cafe + Bakery', address: 'Net Lima, BGC', rating: 4.5, priceLevel: 3, image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500', theme: ['cafe', 'food'], location: { lat: 14.5492, lng: 121.0451 } },
-        { name: 'Venice Grand Canal Mall', address: 'McKinley Hill, Taguig', rating: 4.7, priceLevel: 2, image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500', theme: ['romantic', 'shopping'], location: { lat: 14.5350, lng: 121.0361 } },
-        { name: 'Uptown Mall', address: '9th Ave, BGC', rating: 4.6, priceLevel: 3, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500', theme: ['shopping', 'food', 'nightlife'], location: { lat: 14.5562, lng: 121.0547 } },
-        { name: 'SM Aura Premier', address: 'McKinley Pkwy, BGC', rating: 4.6, priceLevel: 3, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500', theme: ['shopping', 'food'], location: { lat: 14.5476, lng: 121.0543 } }
+        { name: 'Bonifacio High Street', address: 'BGC, Taguig', rating: 4.8, priceLevel: 2, image: '', theme: ['shopping', 'food', 'romantic'], location: { lat: 14.5511, lng: 121.0515 } },
+        { name: 'The Mind Museum', address: 'JY Campos Park, BGC', rating: 4.6, priceLevel: 3, image: '', theme: ['cultural'], location: { lat: 14.5519, lng: 121.0458 } },
+        { name: 'Wildflour Cafe + Bakery', address: 'Net Lima, BGC', rating: 4.5, priceLevel: 3, image: '', theme: ['cafe', 'food'], location: { lat: 14.5492, lng: 121.0451 } },
+        { name: 'Venice Grand Canal Mall', address: 'McKinley Hill, Taguig', rating: 4.7, priceLevel: 2, image: '', theme: ['romantic', 'shopping'], location: { lat: 14.5350, lng: 121.0361 } },
+        { name: 'Uptown Mall', address: '9th Ave, BGC', rating: 4.6, priceLevel: 3, image: '', theme: ['shopping', 'food', 'nightlife'], location: { lat: 14.5562, lng: 121.0547 } },
+        { name: 'SM Aura Premier', address: 'McKinley Pkwy, BGC', rating: 4.6, priceLevel: 3, image: '', theme: ['shopping', 'food'], location: { lat: 14.5476, lng: 121.0543 } }
       ],
       'makati': [
-        { name: 'Ayala Triangle Gardens', address: 'Paseo de Roxas, Makati', rating: 4.7, priceLevel: 0, image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=500', theme: ['romantic', 'cultural'], location: { lat: 14.5571, lng: 121.0231 } },
-        { name: 'Greenbelt Mall', address: 'Ayala Center, Makati', rating: 4.6, priceLevel: 3, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500', theme: ['shopping', 'food'], location: { lat: 14.5535, lng: 121.0211 } },
-        { name: 'SM Makati', address: 'Ayala Center, Makati', rating: 4.5, priceLevel: 2, image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500', theme: ['shopping', 'food'], location: { lat: 14.5511, lng: 121.0251 } },
-        { name: 'Glorietta Mall', address: 'Ayala Center, Makati', rating: 4.5, priceLevel: 2, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500', theme: ['shopping', 'food'], location: { lat: 14.5518, lng: 121.0253 } },
-        { name: 'Puregold Makati', address: 'J.P. Rizal St, Makati', rating: 4.2, priceLevel: 1, image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500', theme: ['shopping'], location: { lat: 14.5721, lng: 121.0211 } }
+        { name: 'Ayala Triangle Gardens', address: 'Paseo de Roxas, Makati', rating: 4.7, priceLevel: 0, image: '', theme: ['romantic', 'cultural'], location: { lat: 14.5571, lng: 121.0231 } },
+        { name: 'Greenbelt Mall', address: 'Ayala Center, Makati', rating: 4.6, priceLevel: 3, image: '', theme: ['shopping', 'food'], location: { lat: 14.5535, lng: 121.0211 } },
+        { name: 'SM Makati', address: 'Ayala Center, Makati', rating: 4.5, priceLevel: 2, image: '', theme: ['shopping', 'food'], location: { lat: 14.5511, lng: 121.0251 } },
+        { name: 'Glorietta Mall', address: 'Ayala Center, Makati', rating: 4.5, priceLevel: 2, image: '', theme: ['shopping', 'food'], location: { lat: 14.5518, lng: 121.0253 } },
+        { name: 'Puregold Makati', address: 'J.P. Rizal St, Makati', rating: 4.2, priceLevel: 1, image: '', theme: ['shopping'], location: { lat: 14.5721, lng: 121.0211 } }
       ],
       'intramuros': [
-        { name: 'SM Mall of Asia', address: 'Seaside Blvd, Pasay', rating: 4.8, priceLevel: 2, image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500', theme: ['shopping', 'food', 'romantic'], location: { lat: 14.5351, lng: 120.9822 } },
-        { name: 'Fort Santiago', address: 'Intramuros, Manila', rating: 4.8, priceLevel: 1, image: 'https://images.unsplash.com/photo-1555993539-1732b0258235?w=500', theme: ['cultural'], location: { lat: 14.5940, lng: 120.9702 } },
-        { name: 'San Agustin Church', address: 'General Luna St, Intramuros', rating: 4.7, priceLevel: 0, image: 'https://images.unsplash.com/photo-1565967511849-76a60a516170?w=500', theme: ['cultural'], location: { lat: 14.5891, lng: 120.9752 } },
-        { name: 'Puregold Manila', address: 'San Marcelino St, Manila', rating: 4.2, priceLevel: 1, image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500', theme: ['shopping'], location: { lat: 14.5851, lng: 120.9881 } },
-        { name: 'Vista Mall (AllMall)', address: 'Global South, Las Piñas', rating: 4.4, priceLevel: 2, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500', theme: ['shopping', 'food'], location: { lat: 14.4751, lng: 120.9811 } }
+        { name: 'Fort Santiago', address: 'Intramuros, Manila', rating: 4.8, priceLevel: 1, image: '', theme: ['cultural'], location: { lat: 14.5940, lng: 120.9702 } },
+        { name: 'San Agustin Church', address: 'General Luna St, Intramuros', rating: 4.7, priceLevel: 0, image: '', theme: ['cultural'], location: { lat: 14.5891, lng: 120.9752 } },
+        { name: 'Manila Cathedral', address: 'Cabildo St, Intramuros', rating: 4.7, priceLevel: 0, image: '', theme: ['cultural'], location: { lat: 14.5916, lng: 120.9735 } },
+        { name: 'Casa Manila', address: 'General Luna St, Intramuros', rating: 4.5, priceLevel: 1, image: '', theme: ['cultural'], location: { lat: 14.5894, lng: 120.9753 } },
+        { name: 'Barbara\'s Heritage Restaurant', address: 'Plaza San Luis, Intramuros', rating: 4.4, priceLevel: 3, image: '', theme: ['food', 'romantic'], location: { lat: 14.5895, lng: 120.9755 } }
       ]
     };
 
@@ -542,7 +557,7 @@ exports.getExploreDestinations = async (req, res) => {
           if (searchResponse.data.results && searchResponse.data.results[0]) {
             const place = searchResponse.data.results[0];
             
-            let photoUrl = `https://images.unsplash.com/photo-${['1583417319070-4a69db38a482', '1555993539-1732b0258235', '1551882547-ff40c63fe5fa', '1559827260-dc66d52bef19', '1542744173-8e7e53415bb0', '1585320806297-9794b3e4eeae'][index]}?w=800&q=80`;
+            let photoUrl = '';
             
             if (place.photos && place.photos[0]) {
               const photoReference = place.photos[0].photo_reference;
@@ -572,7 +587,7 @@ exports.getExploreDestinations = async (req, res) => {
           type: dest.type,
           rating: 4.5,
           description: `Discover the beauty and culture of ${dest.name} in Metro Manila.`,
-          image: `https://images.unsplash.com/photo-${['1583417319070-4a69db38a482', '1555993539-1732b0258235', '1551882547-ff40c63fe5fa', '1559827260-dc66d52bef19', '1542744173-8e7e53415bb0', '1585320806297-9794b3e4eeae'][index]}?w=800&q=80`,
+              image: photoUrl,
           userRatingsTotal: 0
         };
       })

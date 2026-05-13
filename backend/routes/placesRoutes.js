@@ -9,16 +9,18 @@ const {
   getExploreDestinations
 } = require('../controllers/placesController');
 
+const { tripLimiter } = require('../middleware/rateLimiter');
+
 const router = express.Router();
 
 // Smart recommendations with distance and travel time
-router.post('/recommendations', getSmartRecommendations);
+router.post('/recommendations', tripLimiter, getSmartRecommendations);
 
 // Themed trip plans (romantic, food, cultural, etc.)
-router.post('/themed-plan', generateThemedPlan);
+router.post('/themed-plan', tripLimiter, generateThemedPlan);
 
 // Route optimization
-router.post('/optimize-route', optimizeRoute);
+router.post('/optimize-route', tripLimiter, optimizeRoute);
 
 // Place details with reviews and ratings
 router.post('/details', getPlaceDetails);

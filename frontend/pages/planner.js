@@ -84,7 +84,8 @@ export default function Planner() {
             const def = { lat: 14.5995, lng: 120.9842 };
             setUserLocation(def);
             resolve(def);
-          }
+          },
+          { timeout: 5000 } // Add 5 second timeout
         );
       } else {
         const def = { lat: 14.5995, lng: 120.9842 };
@@ -149,7 +150,11 @@ export default function Planner() {
         resultsRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to generate your adventure. Please try again.');
+      if (err.response?.status === 429) {
+        setError('System quota exceeded (OpenAI). Please check your API billing or try again later.');
+      } else {
+        setError(err.response?.data?.message || 'Failed to generate your adventure. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -212,14 +217,14 @@ export default function Planner() {
         >
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-bold mb-6">
             <Sparkles size={16} />
-            AI-POWERED TRIP PLANNER
+            SMART TRIP PLANNER
           </span>
           <h1 className="text-4xl sm:text-6xl lg:text-8xl font-black mb-6 tracking-tight leading-tight">
             Design Your <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-rose-400">Perfect Manila</span>
           </h1>
           <p className="text-slate-400 text-base sm:text-xl max-w-2xl mx-auto">
-            Our AI analyzes thousands of data points to craft a personalized journey through Metro Manila, optimized for your budget and travel style.
+            Get smart recommendations and personalized itineraries through Metro Manila, optimized for your budget and travel style.
           </p>
         </motion.div>
 
@@ -377,9 +382,10 @@ export default function Planner() {
               <div className="space-y-4">
                 <AnimatePresence mode="popLayout">
                   {loadingSuggestions ? (
-                    [1,2,3].map(i => (
-                      <div key={i} className="h-24 rounded-2xl bg-white/5 animate-pulse" />
-                    ))
+                    <div className="py-8 text-center space-y-4">
+                      <div className="w-12 h-12 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mx-auto" />
+                      <p className="text-slate-500 font-black uppercase tracking-widest text-[10px]">Analyzing local systems...</p>
+                    </div>
                   ) : curatedPlaces.length > 0 ? (
                     curatedPlaces.slice(0, 5).map((place, idx) => (
                       <motion.button
@@ -388,8 +394,20 @@ export default function Planner() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.1 }}
                         onClick={() => handlePlaceClick(place)}
-                        className="w-full group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/5 p-4 text-left transition-all hover:bg-white/[0.08] hover:border-white/20 active:scale-95"
+                        className={`w-full group relative overflow-hidden rounded-2xl border p-4 text-left transition-all active:scale-95 ${
+                          selectedPlace?.name === place.name 
+                            ? 'bg-indigo-500/10 border-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.2)]' 
+                            : 'bg-white/[0.03] border-white/5 hover:bg-white/[0.08] hover:border-white/20'
+                        }`}
                       >
+                        {selectedPlace?.name === place.name && (
+                          <motion.div 
+                            layoutId="selected-indicator"
+                            className="absolute top-0 right-0 p-2 text-indigo-400"
+                          >
+                            <CheckCircle2 size={16} />
+                          </motion.div>
+                        )}
                         <div className="flex justify-between items-start mb-2">
                           <h4 className="font-bold text-slate-200 group-hover:text-white transition-colors">{place.name}</h4>
                           <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-400 text-[10px] font-black">
@@ -481,25 +499,26 @@ export default function Planner() {
                     <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-indigo-500 to-rose-500 rounded-l-[2rem]" />
                     <div className="prose prose-invert prose-slate max-w-none">
                       {itinerary.split('\n').map((line, idx) => {
-                        if (line.startsWith('##')) {
+                        const sanitizedLine = line.replace(/\*\*/g, '');
+                        if (sanitizedLine.startsWith('###')) {
+                          return <h4 key={idx} className="text-lg font-black text-indigo-300 mt-8 mb-4 uppercase tracking-wider">{sanitizedLine.replace(/^#+\s/, '')}</h4>;
+                        }
+                        if (sanitizedLine.startsWith('##')) {
                           return <h3 key={idx} className="text-2xl font-black text-white mt-10 first:mt-0 mb-6 flex items-center gap-3">
                             <span className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-lg">
-                              {line.match(/\d+/)?.[0] || '✨'}
+                              {sanitizedLine.match(/\d+/)?.[0] || '📅'}
                             </span>
-                            {line.replace(/^#+\s/, '')}
+                            {sanitizedLine.replace(/^#+\s/, '')}
                           </h3>;
                         }
-                        if (line.startsWith('**')) {
-                          return <p key={idx} className="font-black text-indigo-300 mt-6 mb-2 tracking-wide uppercase text-sm">{line.replace(/\*\*/g, '')}</p>;
-                        }
-                        if (line.trim().startsWith('-')) {
+                        if (sanitizedLine.trim().startsWith('-')) {
                           return <div key={idx} className="flex gap-3 mb-3 group">
                             <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-indigo-400 transition-colors shrink-0" />
-                            <p className="text-slate-400 leading-relaxed text-base">{line.replace(/^-\s/, '')}</p>
+                            <p className="text-slate-400 leading-relaxed text-base">{sanitizedLine.replace(/^-\s/, '')}</p>
                           </div>;
                         }
-                        if (line.trim()) {
-                          return <p key={idx} className="text-slate-400 mb-4 leading-relaxed">{line}</p>;
+                        if (sanitizedLine.trim()) {
+                          return <p key={idx} className="text-slate-400 mb-4 leading-relaxed">{sanitizedLine}</p>;
                         }
                         return null;
                       })}
@@ -534,47 +553,38 @@ export default function Planner() {
                     </h3>
                     
                     <div className="space-y-6">
-                      <div className="flex items-center gap-4 group">
-                        <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-400 border border-orange-500/20 group-hover:bg-orange-500/20 transition-all">
-                          <UtensilsCrossed size={20} />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex justify-between text-sm font-bold mb-2">
-                            <span className="text-slate-400">FOOD & DINING</span>
-                            <span className="text-orange-400">₱{budgetBreakdown.food.toLocaleString()}</span>
+                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 group hover:bg-white/[0.06] transition-all">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 border border-orange-500/20">
+                            <UtensilsCrossed size={20} />
                           </div>
-                          <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-                            <motion.div initial={{ width: 0 }} animate={{ width: '40%' }} className="h-full bg-orange-500" />
+                          <div className="flex-1">
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">FOOD & DINING</p>
+                            <p className="text-xl font-black text-white">₱{budgetBreakdown.food.toLocaleString()}</p>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4 group">
-                        <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20 group-hover:bg-blue-500/20 transition-all">
-                          <Car size={20} />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex justify-between text-sm font-bold mb-2">
-                            <span className="text-slate-400">TRANSPORTATION</span>
-                            <span className="text-blue-400">₱{budgetBreakdown.transport.toLocaleString()}</span>
+                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 group hover:bg-white/[0.06] transition-all">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
+                            <Car size={20} />
                           </div>
-                          <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-                            <motion.div initial={{ width: 0 }} animate={{ width: '30%' }} className="h-full bg-blue-500" />
+                          <div className="flex-1">
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">TRANSPORTATION</p>
+                            <p className="text-xl font-black text-white">₱{budgetBreakdown.transport.toLocaleString()}</p>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4 group">
-                        <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20 group-hover:bg-purple-500/20 transition-all">
-                          <Ticket size={20} />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex justify-between text-sm font-bold mb-2">
-                            <span className="text-slate-400">ACTIVITIES</span>
-                            <span className="text-purple-400">₱{budgetBreakdown.activities.toLocaleString()}</span>
+                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 group hover:bg-white/[0.06] transition-all">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
+                            <Ticket size={20} />
                           </div>
-                          <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-                            <motion.div initial={{ width: 0 }} animate={{ width: '30%' }} className="h-full bg-purple-500" />
+                          <div className="flex-1">
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">ACTIVITIES</p>
+                            <p className="text-xl font-black text-white">₱{budgetBreakdown.activities.toLocaleString()}</p>
                           </div>
                         </div>
                       </div>

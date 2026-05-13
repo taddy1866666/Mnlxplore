@@ -8,8 +8,11 @@ const {
 } = require('../controllers/tripController');
 const router = express.Router();
 
+const { tripLimiter } = require('../middleware/rateLimiter');
+const { validate, generateTripSchema } = require('../middleware/validator');
+
 // Public route
-router.post('/generate', generateItinerary);
+router.post('/generate', tripLimiter, validate(generateTripSchema), generateItinerary);
 
 // Protected routes (optional - user can be authenticated or not)
 router.post('/save', auth, saveTrip);

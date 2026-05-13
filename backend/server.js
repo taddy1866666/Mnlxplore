@@ -3,8 +3,18 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const axios = require('axios');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const hpp = require('hpp');
+const morgan = require('morgan');
 
 const app = express();
+
+// --- Security & Logging Middleware ---
+app.use(morgan('dev')); // Request logging
+app.use(helmet()); // Sets various security-related HTTP headers
+app.use(mongoSanitize()); // Prevent NoSQL injection
+app.use(hpp()); // Prevent HTTP Parameter Pollution
 
 // Middleware
 app.use(cors({
@@ -25,8 +35,12 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '10kb' })); // Reduced limit for better security
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// Rate Limiting
+const { apiLimiter } = require('./middleware/rateLimiter');
+app.use('/api', apiLimiter);
 
 // Database Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mnlxplore';
@@ -44,21 +58,6 @@ app.use('/api/trip', require('./routes/tripRoutes'));
 app.use('/api/trips', require('./routes/tripRoutes'));
 app.use('/api/destinations', require('./routes/destinationRoutes'));
 app.use('/api/places', require('./routes/placesRoutes'));
-
-// Google API Proxy
-app.get('/api/proxy-google', async (req, res) => {
-  try {
-    const { url } = req.query;
-    if (!url) {
-      return res.status(400).json({ message: 'URL parameter required' });
-    }
-    const response = await axios.get(decodeURIComponent(url));
-    res.json(response.data);
-  } catch (error) {
-    console.error('Proxy error:', error.message);
-    res.status(500).json({ message: 'Proxy request failed' });
-  }
-});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

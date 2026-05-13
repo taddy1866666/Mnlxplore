@@ -45,7 +45,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-slate-400 text-lg sm:text-2xl mb-12 max-w-xl leading-relaxed mx-auto lg:mx-0">
-              Ditch the generic guides. Get hyper-personalized itineraries powered by AI, optimized for your budget and travel style.
+              Ditch the generic guides. Get hyper-personalized itineraries powered by smart technology, optimized for your budget and travel style.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link
@@ -70,12 +70,13 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.2 }}
             className="relative h-[300px] sm:h-[400px] lg:h-auto"
           >
-            <div className="relative z-10 glass-card p-4 bg-white/5 border-white/10 rotate-3 translate-x-12 translate-y-12">
-              <img 
-                src="https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&q=80&w=800" 
-                alt="Intramuros" 
-                className="rounded-[1.5rem] w-full grayscale group-hover:grayscale-0 transition-all duration-700"
-              />
+            <div className="relative z-10 glass-card p-8 bg-white/5 border-white/10 rotate-3 translate-x-12 translate-y-12 min-h-[300px] flex flex-col justify-center text-left">
+              <span className="text-indigo-400 font-black text-xs uppercase tracking-[0.3em] mb-4">Current Destination</span>
+              <h3 className="text-5xl font-black text-white leading-none tracking-tighter mb-4">INTRAMUROS <br/> MANILA</h3>
+              <div className="flex gap-2 mt-4">
+                <div className="px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[10px] font-bold text-slate-300 uppercase">Historic</div>
+                <div className="px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[10px] font-bold text-slate-300 uppercase">Cultural</div>
+              </div>
             </div>
             <div className="absolute top-0 right-0 z-20 glass-card p-4 bg-indigo-500/20 border-white/20 -rotate-6 -translate-x-12 -translate-y-12 shadow-2xl">
               <div className="flex items-center gap-4 mb-4">
@@ -100,7 +101,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
            <div className="flex flex-wrap justify-center lg:justify-between items-center gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
               <p className="text-2xl font-black tracking-tighter">MAPS PLATFORM</p>
-              <p className="text-2xl font-black tracking-tighter">OPENAI GPT-4</p>
+              <p className="text-2xl font-black tracking-tighter">SMART ALGORITHMS</p>
               <p className="text-2xl font-black tracking-tighter">METRO MANILA TOURISM</p>
               <p className="text-2xl font-black tracking-tighter">LOCAL INSIGHTS</p>
            </div>
@@ -112,7 +113,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16 lg:mb-20">
             <h2 className="text-3xl sm:text-6xl font-black mb-6 tracking-tight">The Modern Way to <span className="text-gradient">Xplore</span></h2>
-            <p className="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto font-medium">We've combined advanced AI with local expertise to create the ultimate travel companion for the Metro.</p>
+            <p className="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto font-medium">We've combined smart technology with local expertise to create the ultimate travel companion for the Metro.</p>
           </div>
 
           <motion.div 
@@ -135,7 +136,7 @@ export default function Home() {
                 <Shield size={32} />
               </div>
               <h3 className="text-2xl font-black mb-4">Budget Precision</h3>
-              <p className="text-slate-400 leading-relaxed font-medium">No more financial surprises. Our AI calculates transportation, dining, and activity costs with localized accuracy.</p>
+              <p className="text-slate-400 leading-relaxed font-medium">No more financial surprises. Our system calculates transportation, dining, and activity costs with localized accuracy.</p>
             </motion.div>
 
             <motion.div variants={itemVariants} className="glass-card p-8 sm:p-10 group">
@@ -179,7 +180,7 @@ export default function Home() {
               className="glass-card p-12 lg:p-24 bg-gradient-to-br from-indigo-900/50 to-slate-900/50 border-white/10"
             >
                <h2 className="text-4xl sm:text-6xl font-black mb-8 tracking-tighter">Ready to redefine <br /> your <span className="text-gradient">Manila Story?</span></h2>
-               <p className="text-slate-400 text-xl mb-12 max-w-2xl mx-auto">Join thousands of smart travelers who are discovering Metro Manila with AI-precision and local heart.</p>
+               <p className="text-slate-400 text-xl mb-12 max-w-2xl mx-auto">Join thousands of smart travelers who are discovering Metro Manila with smart precision and local heart.</p>
                <Link
                   href="/planner"
                   className="premium-button text-xl px-12 py-6 shadow-2xl shadow-indigo-500/40"

@@ -54,7 +54,7 @@ c:\Projects\htdocs\Mnlxplore\
 │   │   └── auth.js                (JWT verification)
 │   │
 │   ├── 🚀 server.js               (Main Express server)
-│   ├── 📦 package.json            (Dependencies: Express, MongoDB, JWT, OpenAI, etc.)
+│   ├── 📦 package.json            (Dependencies: Express, MongoDB, JWT, etc.)
 │   ├── 📝 .env.example            (Template for environment variables)
 │   ├── .gitignore
 │   └── 📖 README.md               (Backend setup guide)
@@ -107,7 +107,7 @@ c:\Projects\htdocs\Mnlxplore\
 
 ### After Setup (15 minutes)
 1. Install dependencies (`npm install`)
-2. Configure API keys (OpenAI, MongoDB)
+2. Configure API keys (MongoDB)
 3. Run both servers (`npm run dev`)
 4. Visit http://localhost:3000
 5. Test all features:
@@ -197,7 +197,7 @@ Perfect for your proposal/documentation! 📝
 ## ✅ Included Features
 
 - ✅ User Authentication (JWT)
-- ✅ AI-Powered Itinerary Generation
+- ✅ Smart Itinerary Generation
 - ✅ Trip Management (Create, Save, Delete)
 - ✅ Destination Explorer
 - ✅ Responsive Design
@@ -220,7 +220,7 @@ Perfect for your proposal/documentation! 📝
 - MongoDB, Mongoose, JWT, bcryptjs
 
 **AI & Services:**
-- OpenAI API (GPT-4 Turbo)
+- Template-based itinerary generation
 
 **Hosting:**
 - Vercel (Frontend), Render (Backend), MongoDB Atlas (Database)

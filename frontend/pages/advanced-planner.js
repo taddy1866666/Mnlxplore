@@ -91,13 +91,13 @@ export default function AdvancedPlanner() {
         <div className="text-center mb-12">
           <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-pink-100 px-4 py-2 rounded-full mb-4">
             <Sparkles className="w-4 h-4 text-purple-600" />
-            <span className="text-sm font-semibold text-purple-700">Advanced AI Planning</span>
+            <span className="text-sm font-semibold text-purple-700">Smart Trip Planning</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Smart <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Travel Planner</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Get AI-powered recommendations with distance, travel time, and themed itineraries
+            Get smart recommendations with distance, travel time, and themed itineraries
           </p>
         </div>
 

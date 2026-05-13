@@ -1,6 +1,6 @@
 # MNLXPLORE Backend
 
-Express.js backend for the MNLXPLORE AI travel assistant.
+Express.js backend for the MNLXPLORE travel assistant.
 
 ## Setup
 
@@ -14,7 +14,6 @@ npm install
 PORT=5000
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/mnlxplore
 JWT_SECRET=your-secret-key-here
-OPENAI_API_KEY=your-openai-key
 NODE_ENV=development
 ```
 

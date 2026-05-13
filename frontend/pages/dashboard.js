@@ -82,7 +82,7 @@ export default function Dashboard() {
               Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-rose-400">Journeys</span>
             </h1>
             <p className="text-slate-400 text-lg mt-4 max-w-xl">
-              Access and manage your AI-crafted itineraries and planned adventures across Metro Manila.
+              Access and manage your system-crafted itineraries and planned adventures across Metro Manila.
             </p>
           </div>
           
@@ -123,7 +123,7 @@ export default function Dashboard() {
             </div>
             <h3 className="text-2xl sm:text-3xl font-black mb-4">No Journeys Found</h3>
             <p className="text-slate-500 text-lg mb-10 max-w-md mx-auto">
-              Your dashboard looks a bit empty. Ready to start your first AI-guided adventure?
+              Your dashboard looks a bit empty. Ready to start your first smart-guided adventure?
             </p>
             <Link
               href="/planner"
@@ -146,19 +146,18 @@ export default function Dashboard() {
                 className="glass-card group h-full flex flex-col"
               >
                 {/* Visual Header */}
-                <div className="relative h-40 overflow-hidden bg-gradient-to-br from-indigo-500/20 to-purple-600/20">
-                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent)]" />
-                   <div className="absolute top-6 left-8">
-                      <h3 className="text-2xl font-black text-white group-hover:text-indigo-300 transition-colors line-clamp-1">{trip.destination}</h3>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="px-2.5 py-1 rounded-lg bg-white/10 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest">
-                          {trip.status || 'Archived'}
-                        </span>
-                        <span className="text-[10px] text-white/40 font-bold tracking-widest">ID: {trip._id.slice(-6).toUpperCase()}</span>
+                <div className="relative py-8 px-8 bg-indigo-500 overflow-hidden">
+                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-2xl rounded-full translate-x-1/2 -translate-y-1/2" />
+                   <div className="relative z-10 flex flex-col">
+                      <span className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] mb-2">Destination</span>
+                      <h3 className="text-3xl font-black text-white leading-tight line-clamp-1">{trip.destination}</h3>
+                      <div className="flex items-center gap-3 mt-4">
+                        <div className="h-1 w-8 bg-white/30 rounded-full" />
+                        <span className="text-[10px] text-white/50 font-black uppercase tracking-widest">ID: {trip._id.slice(-6).toUpperCase()}</span>
                       </div>
                    </div>
-                   <div className="absolute -bottom-2 -right-2 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all">
-                      <MapPin size={120} />
+                   <div className="absolute top-1/2 right-6 -translate-y-1/2 flex flex-col items-end opacity-20 pointer-events-none">
+                      <Navigation size={64} className="text-white rotate-45" />
                    </div>
                 </div>
 

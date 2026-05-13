@@ -12,7 +12,6 @@ export default function Explore() {
       type: 'Historic Site',
       rating: 4.8,
       description: 'The historic walled city of Manila. Experience centuries of history within its stone walls and cobblestone streets.',
-      image: 'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&q=80&w=1200',
       userRatingsTotal: 15420
     },
     {
@@ -21,7 +20,6 @@ export default function Explore() {
       type: 'Business District',
       rating: 4.5,
       description: 'The financial heart of the Philippines. A mix of towering skyscrapers, luxury shopping, and world-class dining.',
-      image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=1200',
       userRatingsTotal: 8932
     },
     {
@@ -30,7 +28,6 @@ export default function Explore() {
       type: 'Entertainment',
       rating: 4.9,
       description: 'Manila\'s most modern district. A pedestrian-friendly oasis with street art, parks, and vibrant nightlife.',
-      image: 'https://images.unsplash.com/photo-1526749837599-b4efa9fd259e?auto=format&fit=crop&q=80&w=1200',
       userRatingsTotal: 12543
     },
     {
@@ -39,7 +36,6 @@ export default function Explore() {
       type: 'Cultural Hub',
       rating: 4.7,
       description: 'The world\'s oldest Chinatown. A sensory journey of street food, traditional medicine, and hidden temples.',
-      image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80&w=1200',
       userRatingsTotal: 6721
     },
     {
@@ -48,7 +44,6 @@ export default function Explore() {
       type: 'Public Park',
       rating: 4.4,
       description: 'A national park and shrine located in the heart of Quezon City, perfect for cycling and local recreation.',
-      image: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&q=80&w=1200',
       userRatingsTotal: 9834
     },
     {
@@ -57,7 +52,6 @@ export default function Explore() {
       type: 'Historic Park',
       rating: 4.6,
       description: 'A monument to Philippine history. Lush gardens and fountains where locals gather for leisure and national pride.',
-      image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&q=80&w=1200',
       userRatingsTotal: 18234
     }
   ];
@@ -136,32 +130,17 @@ export default function Explore() {
               variants={itemVariants}
               className="glass-card group flex flex-col h-full"
             >
-              {/* Image Container with Grayscale Effect */}
-              <div className="relative h-64 overflow-hidden">
-                <img 
-                  src={dest.image} 
-                  alt={dest.name}
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60" />
-                
-                {/* Overlay Tags */}
-                <div className="absolute top-4 right-4 flex flex-col gap-2">
+              {/* Content (text-only card) */}
+              <div className="p-8 flex flex-col flex-1">
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <span className="px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-[10px] font-black uppercase tracking-widest">
+                    {dest.type}
+                  </span>
                   <div className="bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-2xl flex items-center gap-1.5 shadow-xl">
                     <Star className="w-3.5 h-3.5 text-indigo-600 fill-current" />
                     <span className="text-xs font-black text-slate-900">{dest.rating}</span>
                   </div>
                 </div>
-                
-                <div className="absolute bottom-4 left-6">
-                  <span className="px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-[10px] font-black uppercase tracking-widest">
-                    {dest.type}
-                  </span>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-8 flex flex-col flex-1">
                 <h3 className="text-2xl font-black mb-3 group-hover:text-indigo-400 transition-colors">
                   {dest.name}
                 </h3>
@@ -201,7 +180,7 @@ export default function Explore() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
           <h2 className="text-3xl sm:text-4xl font-black mb-6 text-white relative">Can't find what you're looking for?</h2>
           <p className="text-indigo-100 text-lg mb-10 max-w-xl mx-auto relative opacity-90">
-            Tell our AI where you want to go and what you love, and we'll build a custom itinerary just for you.
+            Tell our system where you want to go and what you love, and we'll build a custom itinerary just for you.
           </p>
           <Link
             href="/planner"

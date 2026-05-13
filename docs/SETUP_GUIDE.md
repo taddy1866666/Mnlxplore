@@ -55,7 +55,7 @@ This installs:
 - cors (Cross-Origin)
 - bcryptjs (Password hashing)
 - jsonwebtoken (Authentication)
-- openai (AI integration)
+- Template-based itinerary system (Itinerary generation)
 - dotenv (Environment variables)
 - nodemon (Auto-reload during development)
 
@@ -67,18 +67,11 @@ Create `.env` file in the `backend` folder:
 PORT=5000
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/mnlxplore
 JWT_SECRET=your-super-secret-jwt-key-generate-a-strong-one
-OPENAI_API_KEY=your-openai-api-key
 NODE_ENV=development
 CLIENT_URL=http://localhost:3000
 ```
 
 **Get API Keys:**
-- **OpenAI Key:**
-  1. Go to [platform.openai.com](https://platform.openai.com)
-  2. Sign up/Login
-  3. Create API key in Settings → API keys
-  4. Copy and paste in `.env`
-
 - **MongoDB URI:**
   1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
   2. Create free cluster

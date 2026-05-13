@@ -1,15 +1,15 @@
 # 🗺️ Advanced Map-Based Features Documentation
 
 ## Overview
-MNLXPLORE now includes enterprise-grade map intelligence with AI-powered recommendations, themed trip planning, route optimization, and real-time distance/time calculations.
+MNLXPLORE now includes enterprise-grade map intelligence with smart recommendations, themed trip planning, route optimization, and real-time distance/time calculations.
 
 ---
 
 ## 🎯 Core Features Implemented
 
-### 1. Smart Place Recommendations (AI + Maps Integration)
+### 1. Smart Place Recommendations (Maps Integration)
 
-**Description:** AI-powered location recommendations with real-time distance and travel time calculations.
+**Description:** Smart location recommendations with real-time distance and travel time calculations.
 
 **Endpoint:** `POST /api/places/recommendations`
 
@@ -57,7 +57,7 @@ MNLXPLORE now includes enterprise-grade map intelligence with AI-powered recomme
 
 ### 2. Themed Trip Plans (Date/Food/Cultural)
 
-**Description:** AI generates complete themed itineraries with specific place recommendations.
+**Description:** Generate complete themed itineraries with specific place recommendations.
 
 **Endpoint:** `POST /api/places/themed-plan`
 
@@ -203,7 +203,7 @@ MNLXPLORE now includes enterprise-grade map intelligence with AI-powered recomme
    - Responsive grid layout
 
 4. **Themed Plan Output**
-   - Full AI-generated itinerary
+   - Full generated itinerary
    - Budget breakdown
    - Time schedules
    - Insider tips
@@ -221,7 +221,7 @@ Express.js
 │   └── placesRoutes.js (API endpoints)
 └── Integration
     ├── Google Maps API (Geocoding, Places, Distance Matrix, Directions)
-    └── OpenAI API (Themed itinerary generation)
+    └── Itinerary generation service
 ```
 
 ### Frontend Stack
@@ -263,7 +263,7 @@ Next.js
 
 5. **Generate Themed Plan**
    - Click "Generate Themed Plan"
-   - Get complete AI itinerary
+   - Get complete itinerary
    - Save or share plan
 
 ---
@@ -290,9 +290,9 @@ Next.js
 
 ### OpenAI Integration
 
-**Model:** GPT-4o-mini
-**Purpose:** Generate themed itineraries
-**Fallback:** Template-based generation if API fails
+No longer uses external AI services. Itineraries are generated using template-based system.
+
+**Fallback:** Template-based generation
 
 ---
 
@@ -303,7 +303,7 @@ Next.js
 **Question:** "What makes your map features unique?"
 
 **Answer:**
-> "Our system integrates real-time map intelligence with AI-powered recommendations. Unlike basic map apps, we calculate distance and travel time for every recommendation, filter by budget, and generate themed itineraries. For example, if a user selects 'Romantic Date' theme with ₱3,000 budget in BGC, the system will recommend intimate restaurants within walking distance, calculate exact travel times, and create a complete day plan with costs."
+> "Our system integrates real-time map intelligence with smart recommendations. Unlike basic map apps, we calculate distance and travel time for every recommendation, filter by budget, and generate themed itineraries. For example, if a user selects 'Romantic Date' theme with ₱3,000 budget in BGC, the system will recommend intimate restaurants within walking distance, calculate exact travel times, and create a complete day plan with costs."
 
 **Question:** "How does route optimization work?"
 
@@ -313,7 +313,7 @@ Next.js
 **Question:** "What's the benefit of themed plans?"
 
 **Answer:**
-> "Themed plans solve decision fatigue. Instead of browsing hundreds of places, users select a theme like 'Food Trip' or 'Cultural Tour', and AI generates a curated itinerary with specific places, costs, and schedules. This combines the intelligence of AI with real-world map data for practical, actionable plans."
+> "Themed plans solve decision fatigue. Instead of browsing hundreds of places, users select a theme like 'Food Trip' or 'Cultural Tour', and the system generates a curated itinerary with specific places, costs, and schedules. This combines intelligent recommendation logic with real-world map data for practical, actionable plans."
 
 ---
 

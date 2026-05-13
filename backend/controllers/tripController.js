@@ -1,5 +1,6 @@
 const Trip = require('../models/Trip');
 const { OpenAI } = require('openai');
+const { apiCache } = require('../utils/cache');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -7,8 +8,22 @@ const openai = new OpenAI({
 
 exports.generateItinerary = async (req, res) => {
   try {
-    const { destination, budget, days, preferences, travelMode, suggestedPlaces } = req.body;
+    const { destination, budget, days, preferences, travelMode, suggestedPlaces = [] } = req.body;
+    console.log(`[Itinerary] Generating for ${destination} (${days} days)...`);
     const userId = req.user?.userId;
+
+    // Generate unique cache key
+    const cacheKey = `itinerary_${destination}_${budget}_${days}_${JSON.stringify(preferences)}_${travelMode}_${JSON.stringify(suggestedPlaces?.map(p => p.name))}`;
+    
+    const cachedResult = apiCache.get(cacheKey);
+    if (cachedResult) {
+      console.log(`[Cache] Hit for ${destination}`);
+      return res.status(200).json({
+        message: 'Itinerary retrieved from system cache',
+        itinerary: cachedResult,
+        cached: true
+      });
+    }
 
     // Validate input
     if (!destination || !budget || !days) {
@@ -56,21 +71,15 @@ Preferences: ${sanitizedPreferences}
 Travel Mode: ${travelMode || 'walking'}${placesContext}
 
 Include:
-1. A structured daily schedule that EXCLUSIVELY uses and incorporates ALL the recommended places provided above:
-${suggestedPlaces.map(p => `   - ${p.name} (Priority Venue)`).join('\n')}
-2. Estimated costs for each activity (based on Philippine Peso)
-3. Transportation recommendations (Walking: ₱0, Motorcycle: ~₱70/50km, Driving: ~₱70/10km, Transit: ₱16.25 base + ₱1.47/km)
-4. Best time to visit each location
-5. Tips for travelers
-6. Total daily budget breakdown
+1. A structured daily schedule using clean headings (## Day X) and subheadings (### Activity Name).
+2. ABSOLUTELY DO NOT USE DOUBLE ASTERISKS (**) FOR BOLDING. DO NOT USE ASTERISKS (*) ANYWHERE IN THE TEXT.
+3. Use plain text for descriptions and simple dashes (-) for bullet points.
+4. Estimated costs for each activity (based on Philippine Peso).
+5. Specific local transit routes (Jeepney/LRT/MRT).
+6. Total daily budget breakdown at the end of each day.
 
-Guidelines for costs:
-- Budget Meals: ₱150 - ₱300
-- Mid-range Meals: ₱400 - ₱800
-- Fine Dining: ₱1,500+
-- Most museums/parks: ₱50 - ₱300
-
-Format the response in a clear, day-by-day structure using Markdown.`;
+Format the output clearly using only Markdown headers (## and ###) and plain text paragraphs.
+`;
 
     let itineraryText;
     
@@ -79,6 +88,7 @@ Format the response in a clear, day-by-day structure using Markdown.`;
         throw new Error('AI Service not configured');
       }
 
+      console.log(`[AI] Requesting generation for ${sanitizedDestination}...`);
       const message = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [
@@ -89,9 +99,10 @@ Format the response in a clear, day-by-day structure using Markdown.`;
         ],
         temperature: 0.7,
         max_tokens: 2000
-      });
+      }, { timeout: 5000 });
 
       itineraryText = message.choices[0].message.content;
+      console.log(`[AI] Successfully generated itinerary for ${sanitizedDestination}`);
     } catch (aiError) {
       console.error('OpenAI API Error:', aiError.message);
       
@@ -101,7 +112,7 @@ Format the response in a clear, day-by-day structure using Markdown.`;
       const placesPerDay = Math.ceil(suggestedPlaces.length / parsedDays);
       
       itineraryText = `# ${parsedDays}-Day Itinerary for ${sanitizedDestination}
-(Note: AI Service unavailable, generating template based on suggested spots)
+(Note: Smart service offline, generating template based on suggested spots)
 
 Budget: ₱${parsedBudget.toLocaleString()}
 Preferences: ${sanitizedPreferences}
@@ -131,6 +142,9 @@ ${dayPlaces.length > 0 ? dayPlaces.map((p, idx) => `
 - This itinerary is built using your curated places: ${suggestedPlaces.map(p => p.name).join(', ')}
 - Adjust activities based on your interests: ${sanitizedPreferences}`;
     }
+
+    // Save to cache for future requests
+    apiCache.set(cacheKey, itineraryText);
 
     // Save trip if user is authenticated
     if (trip) {

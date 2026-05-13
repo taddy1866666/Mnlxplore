@@ -20,23 +20,9 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-slate-400 text-lg leading-relaxed max-w-md">
-              Democratizing travel planning in Metro Manila through artificial intelligence. We help you find the soul of the city, one itinerary at a time.
+              Democratizing travel planning in Metro Manila through smart technology. We help you find the soul of the city, one itinerary at a time.
             </p>
-            <div className="flex items-center gap-4">
-              {[
-                { icon: Facebook, href: '#' },
-                { icon: Twitter, href: '#' },
-                { icon: Github, href: 'https://github.com/taddy1866666/Mnlxplore' }
-              ].map((social, i) => (
-                <a 
-                  key={i} 
-                  href={social.href} 
-                  className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-indigo-400 hover:border-indigo-400/30 hover:bg-indigo-400/5 transition-all"
-                >
-                  <social.icon size={20} />
-                </a>
-              ))}
-            </div>
+            {/* Social links removed as requested */}
           </div>
 
           {/* Navigation Columns */}
@@ -66,7 +52,7 @@ export default function Footer() {
                 <Mail className="w-5 h-5 text-indigo-400 mt-0.5" />
                 <div>
                   <p className="text-white font-bold text-sm">Email Support</p>
-                  <p className="text-slate-400 text-sm">hello@mnlxplore.com</p>
+                  <p className="text-slate-400 text-sm">christianlanzaderas7@gmail.com</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">

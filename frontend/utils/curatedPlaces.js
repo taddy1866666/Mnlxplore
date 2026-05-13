@@ -5,7 +5,7 @@ export const curatedPlaces = {
       {
         name: 'The Palace Pool Club',
         address: 'One Bonifacio High Street, BGC',
-        image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500',
+        image: '',
         rating: 4.5,
         priceLevel: 3,
         description: 'Rooftop pool with stunning city views',
@@ -14,7 +14,7 @@ export const curatedPlaces = {
       {
         name: 'Wildflour Cafe + Bakery',
         address: 'Bonifacio High Street, BGC',
-        image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500',
+        image: '',
         rating: 4.6,
         priceLevel: 2,
         description: 'Cozy cafe perfect for dates',
@@ -23,7 +23,7 @@ export const curatedPlaces = {
       {
         name: 'Terra 28th',
         address: '28th Floor, Two Bonifacio High Street',
-        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500',
+        image: '',
         rating: 4.7,
         priceLevel: 3,
         description: 'Rooftop bar with panoramic views',
@@ -34,7 +34,7 @@ export const curatedPlaces = {
       {
         name: 'Ramen Nagi',
         address: 'Bonifacio High Street, BGC',
-        image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500',
+        image: '',
         rating: 4.5,
         priceLevel: 2,
         description: 'Authentic Japanese ramen',
@@ -43,7 +43,7 @@ export const curatedPlaces = {
       {
         name: 'Pound by Todd English',
         address:'Bonifacio High Street, BGC',
-        image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500',
+        image: '',
         rating: 4.4,
         priceLevel: 3,
         description: 'Premium steaks and burgers',
@@ -52,7 +52,7 @@ export const curatedPlaces = {
       {
         name: 'Mercato Centrale',
         address: 'The Parking Lot, BGC',
-        image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500',
+        image: '',
         rating: 4.3,
         priceLevel: 1,
         description: 'Weekend food market',
@@ -63,7 +63,7 @@ export const curatedPlaces = {
       {
         name: 'Starbucks Reserve',
         address: 'Bonifacio High Street, BGC',
-        image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=500',
+        image: '',
         rating: 4.6,
         priceLevel: 2,
         description: 'Premium coffee experience',
@@ -72,7 +72,7 @@ export const curatedPlaces = {
       {
         name: 'The Coffee Bean & Tea Leaf',
         address: 'Serendra, BGC',
-        image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=500',
+        image: '',
         rating: 4.4,
         priceLevel: 2,
         description: 'Relaxing coffee shop',
@@ -83,7 +83,7 @@ export const curatedPlaces = {
       {
         name: 'Mind Museum',
         address: 'J.Y. Campos Park, BGC',
-        image: 'https://images.unsplash.com/photo-1565911292670-a0e72e0f9e45?w=500',
+        image: '',
         rating: 4.7,
         priceLevel: 2,
         description: 'Interactive science museum',
@@ -94,7 +94,7 @@ export const curatedPlaces = {
       {
         name: 'The Palace',
         address: 'Uptown Bonifacio, BGC',
-        image: 'https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=500',
+        image: '',
         rating: 4.5,
         priceLevel: 3,
         description: 'Premier nightclub',
@@ -107,7 +107,7 @@ export const curatedPlaces = {
       {
         name: 'Greenbelt Park',
         address: 'Greenbelt, Makati',
-        image: 'https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=500',
+        image: '',
         rating: 4.4,
         priceLevel: 0,
         description: 'Peaceful park in the city',
@@ -116,7 +116,7 @@ export const curatedPlaces = {
       {
         name: 'Antonio\'s',
         address: 'Tagaytay (near Makati)',
-        image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=500',
+        image: '',
         rating: 4.8,
         priceLevel: 3,
         description: 'Fine dining restaurant',
@@ -127,7 +127,7 @@ export const curatedPlaces = {
       {
         name: 'Salcedo Saturday Market',
         address: 'Jaime Velasquez Park, Makati',
-        image: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=500',
+        image: '',
         rating: 4.5,
         priceLevel: 1,
         description: 'Weekend food market',
@@ -136,7 +136,7 @@ export const curatedPlaces = {
       {
         name: 'Locavore',
         address: 'Brixton Street, Kapitolyo',
-        image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500',
+        image: '',
         rating: 4.6,
         priceLevel: 2,
         description: 'Modern Filipino cuisine',
@@ -147,7 +147,7 @@ export const curatedPlaces = {
       {
         name: 'Yardstick Coffee',
         address: 'Chino Roces, Makati',
-        image: 'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=500',
+        image: '',
         rating: 4.7,
         priceLevel: 2,
         description: 'Specialty coffee roasters',
@@ -158,7 +158,7 @@ export const curatedPlaces = {
       {
         name: 'Greenbelt Mall',
         address: 'Ayala Center, Makati',
-        image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500',
+        image: '',
         rating: 4.6,
         priceLevel: 3,
         description: 'Upscale shopping mall',
@@ -169,7 +169,7 @@ export const curatedPlaces = {
       {
         name: 'Poblacion Bars',
         address: 'Poblacion, Makati',
-        image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=500',
+        image: '',
         rating: 4.5,
         priceLevel: 2,
         description: 'Hipster bar district',
@@ -182,7 +182,7 @@ export const curatedPlaces = {
       {
         name: 'Fort Santiago',
         address: 'Intramuros, Manila',
-        image: 'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=500',
+        image: '',
         rating: 4.6,
         priceLevel: 1,
         description: 'Historic Spanish fortress',
@@ -191,7 +191,7 @@ export const curatedPlaces = {
       {
         name: 'San Agustin Church',
         address: 'General Luna St, Intramuros',
-        image: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=500',
+        image: '',
         rating: 4.7,
         priceLevel: 1,
         description: 'UNESCO World Heritage Site',
@@ -200,7 +200,7 @@ export const curatedPlaces = {
       {
         name: 'Casa Manila',
         address: 'General Luna St, Intramuros',
-        image: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=500',
+        image: '',
         rating: 4.5,
         priceLevel: 1,
         description: 'Spanish colonial house museum',
@@ -211,7 +211,7 @@ export const curatedPlaces = {
       {
         name: 'Baluarte de San Diego',
         address: 'Intramuros, Manila',
-        image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500',
+        image: '',
         rating: 4.4,
         priceLevel: 1,
         description: 'Historic garden fortress',
@@ -222,7 +222,7 @@ export const curatedPlaces = {
       {
         name: 'Barbara\'s Heritage Restaurant',
         address: 'Plaza San Luis, Intramuros',
-        image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=500',
+        image: '',
         rating: 4.3,
         priceLevel: 2,
         description: 'Filipino heritage cuisine',
@@ -235,7 +235,7 @@ export const curatedPlaces = {
       {
         name: 'Quezon Memorial Circle',
         address: 'Elliptical Road, Quezon City',
-        image: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=500',
+        image: '',
         rating: 4.4,
         priceLevel: 0,
         description: 'Historic park and monument',
@@ -244,7 +244,7 @@ export const curatedPlaces = {
       {
         name: 'Art in Island',
         address: 'Cubao, Quezon City',
-        image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=500',
+        image: '',
         rating: 4.5,
         priceLevel: 1,
         description: '3D interactive art museum',
@@ -255,7 +255,7 @@ export const curatedPlaces = {
       {
         name: 'Maginhawa Food Street',
         address: 'Maginhawa Street, QC',
-        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500',
+        image: '',
         rating: 4.5,
         priceLevel: 1,
         description: 'Food hub with various restaurants',
@@ -266,7 +266,7 @@ export const curatedPlaces = {
       {
         name: 'Commune',
         address: 'Maginhawa Street, QC',
-        image: 'https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=500',
+        image: '',
         rating: 4.6,
         priceLevel: 2,
         description: 'Artsy cafe and bar',
@@ -279,7 +279,7 @@ export const curatedPlaces = {
       {
         name: 'The Curator',
         address: 'Poblacion, Makati',
-        image: 'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=500',
+        image: '',
         rating: 4.6,
         priceLevel: 2,
         description: 'Coffee by day, cocktails by night',
@@ -288,7 +288,7 @@ export const curatedPlaces = {
       {
         name: 'Z Hostel',
         address: 'Poblacion, Makati',
-        image: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=500',
+        image: '',
         rating: 4.5,
         priceLevel: 2,
         description: 'Rooftop bar with live music',
@@ -299,7 +299,7 @@ export const curatedPlaces = {
       {
         name: 'El Chupacabra',
         address: 'Poblacion, Makati',
-        image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=500',
+        image: '',
         rating: 4.4,
         priceLevel: 2,
         description: 'Mexican street food',
@@ -312,7 +312,7 @@ export const curatedPlaces = {
       {
         name: 'Kapitolyo Food District',
         address: 'Kapitolyo, Pasig',
-        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500',
+        image: '',
         rating: 4.5,
         priceLevel: 2,
         description: 'Trendy food neighborhood',
@@ -323,7 +323,7 @@ export const curatedPlaces = {
       {
         name: 'Shangri-La Plaza',
         address: 'EDSA, Mandaluyong',
-        image: 'https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?w=500',
+        image: '',
         rating: 4.5,
         priceLevel: 3,
         description: 'Upscale shopping mall',
