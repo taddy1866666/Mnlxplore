@@ -12,8 +12,8 @@ export default function Footer() {
           {/* Brand & Mission */}
           <div className="md:col-span-6 space-y-8">
             <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-2.5 rounded-2xl shadow-lg shadow-indigo-500/20">
-                <Map className="w-7 h-7 text-white" />
+              <div className="w-12 h-12 overflow-hidden rounded-2xl shadow-lg shadow-indigo-500/20">
+                <img src="/images/mnlxplore-logo.png" alt="Logo" className="w-full h-full object-cover" />
               </div>
               <span className="text-3xl font-black text-white tracking-tighter">
                 MNL<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-rose-400">XPLORE</span>

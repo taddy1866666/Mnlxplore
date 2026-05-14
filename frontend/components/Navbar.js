@@ -50,11 +50,15 @@ export default function Navbar() {
       }`}>
         <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-2.5 rounded-2xl group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-indigo-500/20">
-              <Map className="w-6 h-6 text-white" />
+          <Link href="/" className="flex items-center space-x-3 group active:scale-95 transition-transform">
+            <div className="relative w-10 h-10 sm:w-12 sm:h-12 overflow-hidden rounded-xl group-hover:rotate-6 transition-all duration-500 shadow-lg shadow-indigo-500/20">
+              <img 
+                src="/images/mnlxplore-logo.png" 
+                alt="MNLXPLORE Logo" 
+                className="w-full h-full object-cover"
+              />
             </div>
-            <span className="text-xl sm:text-2xl font-black text-white tracking-tighter">
+            <span className="text-xl sm:text-2xl font-black text-white tracking-tighter group-hover:text-indigo-400 transition-colors">
               MNL<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-rose-400">XPLORE</span>
             </span>
           </Link>
@@ -138,7 +142,12 @@ export default function Navbar() {
             className="fixed inset-0 bg-slate-950/98 backdrop-blur-3xl p-8 z-[60] flex flex-col"
           >
              <div className="flex justify-between items-center mb-12">
-                <span className="text-xl font-black tracking-tighter">MNL<span className="text-indigo-400">XPLORE</span></span>
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 overflow-hidden rounded-xl shadow-lg shadow-indigo-500/20">
+                    <img src="/images/mnlxplore-logo.png" alt="Logo" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xl font-black tracking-tighter text-white">MNL<span className="text-indigo-400">XPLORE</span></span>
+                </div>
                 <button onClick={() => setMobileMenuOpen(false)} className="p-3 rounded-2xl bg-white/5 text-white">
                   <X size={24} />
                 </button>
